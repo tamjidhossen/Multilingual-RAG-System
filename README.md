@@ -1,18 +1,22 @@
-# Multilingual RAG System for*Automatic expansion and intelligent handling of Bengali educational abbreviations*
-
-</div>
-
-## Sample Interactionsture
+# Multilingual RAG System for Bengali Literature
 
 > A sophisticated **Multilingual Retrieval-Augmented Generation (RAG) System** that understands and responds to both Bengali and English queries with conversation memory.
 
+## Screenshots
+
+### Chat Interface
+![Chat Interface](assets/screenshots/chat_interface_showcase.png)
+
+### Abbreviation Showcase
+![Abbreviation Showcase](assets/screenshots/abbreviation_showcase.png)
+
 ## What Makes This Special
 
-✓ **Perfect Bengali Text Processing** - Advanced Gemini 2.5 Pro OCR achieves 95%+ accuracy on Bengali HSC textbook content  
-✓ **Intelligent Content-Aware Chunking** - Different strategies for MCQs, essays, and tables  
-✓ **True Conversation Memory** - Remembers context and handles meta-queries like "What was my last question?"  
-✓ **Seamless Multilingual Support** - Ask in Bengali, get answers in Bengali; ask in English about Bengali content  
-✓ **Production-Ready API** - Complete REST API with interactive web interface  
+**Perfect Bengali Text Processing** - Advanced Gemini 2.5 Pro OCR achieves 95%+ accuracy on Bengali HSC textbook content  
+**Intelligent Content-Aware Chunking** - Different strategies for MCQs, essays, and tables  
+**True Conversation Memory** - Remembers context and handles meta-queries like "What was my last question?"  
+**Seamless Multilingual Support** - Ask in Bengali, get answers in Bengali; ask in English about Bengali content  
+**Production-Ready API** - Complete REST API with interactive web interface  
 
 ## Live Demo
 
@@ -21,31 +25,7 @@ python app.py
 # Visit: http://localhost:8000
 ```
 
-## System Screenshots
-
-<div align="center">
-
-### Interactive Chat Interface
-![Chat Interface](assets/screenshots/chat_interface_showcase.png)
-*Real-time conversation with Bengali literature content, showcasing memory-aware responses and multilingual support*
-
-### Advanced Abbreviation Processing  
-![Abbreviation Showcase](assets/screenshots/abbreviation_showcase.png)
-*Automatic expansion and intelligent handling of Bengali educational abbreviations*
-
-</div>
-
-## � System Screenshots
-
-### Interactive Chat Interface
-![Chat Interface](assets/screenshots/chat_interface_showcase.png)
-*Real-time conversation with Bengali literature content, showcasing memory-aware responses*
-
-### Advanced Abbreviation Processing
-![Abbreviation Showcase](assets/screenshots/abbreviation_showcase.png)
-*Automatic expansion and handling of Bengali educational abbreviations*
-
-## �💫 Sample Interactions
+## Sample Interactions
 
 **Bengali Literature Queries:**
 ```
@@ -59,6 +39,40 @@ Q: বিয়ের সময় কল্যাণীর প্রকৃত �
 A: ১৫ বছর
 ```
 
+**University Entrance Exam Questions:**
+```
+Q: ঢাকা বিশ্ববিদ্যালয় D ইউনিটে আসা সকল প্রশ্ন ও উত্তর দাও
+A: ঢাকা বিশ্ববিদ্যালয় D ইউনিটে আসা প্রশ্ন ও উত্তরগুলি নিচে দেওয়া হলো:
+
+* **প্রশ্ন ১:** ছেলেবেলায় অনুপমের চেহারা নিয়ে বিদ্রূপ করার সময় পণ্ডিতমশায় কোন দুটি ফুল ও ফলের সঙ্গে তুলনা করেছিলেন?
+  * ক) বকুল ও ডুমুর
+  * খ) পলাশ ও আমড়া  
+  * গ) পারুল ও লটকন
+  * ঘ) শিমুল ও মাকাল
+  * **সঠিক উত্তর:** ঘ) শিমুল ও মাকাল
+
+* **প্রশ্ন ১৩:** 'অপরিচিতা' গল্পের নায়কের নাম কী ছিল?
+  * ক) হরিশ
+  * খ) বিনু
+  * গ) অনুপম
+  * ঘ) শম্ভুনাথ
+  * **সঠিক উত্তর:** গ) অনুপম
+
+* **প্রশ্ন ১৪:** রবীন্দ্রনাথ ঠাকুরের রচনা কোনটি?
+  * ক) কালান্তর
+  * খ) প্রবন্ধ সংগ্রহ
+  * গ) পান্থজনের সখা
+  * ঘ) একদা
+  * **সঠিক উত্তর:** ক) কালান্তর
+
+* **প্রশ্ন ২২:** রবীন্দ্রনাথের গল্পে ছেলেবেলায় অনুপম পণ্ডিতমশাইয়েরা বিদ্রূপের পাত্র হয়েছিলেন কেন?
+  * ক) শরীর কালো ছিল বলে
+  * খ) বোকা ছিল বলে
+  * গ) সুন্দর চেহারার জন্য
+  * ঘ) পড়া বলতে না পারায়
+  * **সঠিক উত্তর:** গ) সুন্দর চেহারার জন্য
+```
+
 **Memory-Aware Conversations:**
 ```
 Q: অনুপমের বাবা কী করতেন?
@@ -66,28 +80,6 @@ A: ওকালতি
 
 Q: আমার শেষ প্রশ্ন কী ছিল?
 A: আপনার শেষ প্রশ্ন ছিল: "অনুপমের বাবা কী করতেন?"
-```
-
-**University Abbreviation Processing:**
-```
-Q: ঢাকা বিশ্ববিদ্যালয় D ইউনিটে আসা সকল প্রশ্ন ও উওর দাও
-A: ঢাকা বিশ্ববিদ্যালয় D ইউনিটে আসা প্রশ্ন ও উত্তরগুলি নিচে দেওয়া হলো:
-
-**প্রশ্ন ১:** ছেলেবেলায় অনুপমের চেহারা নিয়ে বিদ্রূপ করার সময় পণ্ডিতমশায় কোন দুটি ফুল ও ফলের সঙ্গে তুলনা করেছিলেন?
-ক) বকুল ও ডুমুর  খ) পলাশ ও আমড়া  গ) পারুল ও লটকন  ঘ) শিমুল ও মাকাল
-**সঠিক উত্তর:** ঘ) শিমুল ও মাকাল
-
-**প্রশ্ন ১৩:** 'অপরিচিতা' গল্পের নায়কের নাম কী ছিল?
-ক) হরিশ  খ) বিনু  গ) অনুপম  ঘ) শম্ভুনাথ
-**সঠিক উত্তর:** গ) অনুপম
-
-**প্রশ্ন ১৪:** রবীন্দ্রনাথ ঠাকুরের রচনা কোনটি?
-ক) কালান্তর  খ) প্রবন্ধ সংগ্রহ  গ) পান্থজনের সখা  ঘ) একদা
-**সঠিক উত্তর:** ক) কালান্তর
-
-**প্রশ্ন ২২:** রবীন্দ্রনাথের গল্পে ছেলেবেলায় অনুপম পঠিতমশাইয়েরা বিদ্রূপের পাত্র হয়েছিলেন কেন?
-ক) শরীর কালো ছিল বলে  খ) বোকা ছিল বলে  গ) সুন্দর চেহারার জন্য  ঘ) পড়া বলতে না পারায়
-**সঠিক উত্তর:** গ) সুন্দর চেহারার জন্য
 ```
 
 ## Quick Start
@@ -229,12 +221,12 @@ Content-Type: application/json
 
 ## Project Highlights
 
-✓ **Advanced Bengali OCR** - 95%+ accuracy with Gemini 2.5 Pro  
-✓ **Smart Content Processing** - Automatic MCQ/essay/table separation  
-✓ **Conversation Memory** - True context-aware interactions  
-✓ **Production API** - Complete REST API with web interface  
-✓ **Multilingual Queries** - Seamless Bengali-English support  
-✓ **Custom RAG Pipeline** - No dependency on heavy frameworks  
+**Advanced Bengali OCR** - 95%+ accuracy with Gemini 2.5 Pro  
+**Smart Content Processing** - Automatic MCQ/essay/table separation  
+**Conversation Memory** - True context-aware interactions  
+**Production API** - Complete REST API with web interface  
+**Multilingual Queries** - Seamless Bengali-English support  
+**Custom RAG Pipeline** - No dependency on heavy frameworks  
 
 ---
 
