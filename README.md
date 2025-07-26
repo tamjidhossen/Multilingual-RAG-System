@@ -44,8 +44,6 @@ A: ওকালতি
 Q: আমার শেষ প্রশ্ন কী ছিল?
 A: আপনার শেষ প্রশ্ন ছিল: "অনুপমের বাবা কী করতেন?"
 
-Q: what was my last query?
-A: Your last question was: "আমার শেষ প্রশ্ন কী ছিল?"
 ```
 
 ### Abbreviation Processing

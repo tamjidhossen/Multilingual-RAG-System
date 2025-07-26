@@ -31,7 +31,7 @@ async def lifespan(app: FastAPI):
     global pipeline, memory_manager, logger
     logger = setup_logger(__name__)
     
-    logger.info("Starting Multilingual RAG API...")
+    logger.info("Starting HSC Bangla RAG System for আপরিচিতা...")
     try:
         pipeline = RAGPipeline()
         memory_manager = get_memory_manager()
@@ -45,11 +45,11 @@ async def lifespan(app: FastAPI):
     # Cleanup on shutdown
     if memory_manager:
         memory_manager.save_and_cleanup()
-    logger.info("Shutting down Multilingual RAG API...")
+    logger.info("Shutting down HSC Bangla RAG System...")
 
 app = FastAPI(
-    title="Multilingual RAG System API",
-    description="A lightweight REST API for multilingual RAG queries supporting Bengali and English",
+    title="HSC Bangla 1st Paper RAG System",
+    description="A REST API for RAG queries about HSC Bangla 1st Paper's 'আপরিচিতা' (Aporichita) - supporting Bengali and English",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -125,10 +125,10 @@ async def root():
     except FileNotFoundError:
         return HTMLResponse("""
         <html>
-            <head><title>Multilingual RAG System</title></head>
+            <head><title>HSC Bangla RAG System - আপরিচিতা</title></head>
             <body>
-                <h1>Multilingual RAG System API</h1>
-                <p>Welcome to the Multilingual RAG System!</p>
+                <h1>HSC Bangla 1st Paper RAG System</h1>
+                <p>Welcome to the RAG System for "আপরিচিতা" (Aporichita)!</p>
                 <p><a href="/docs">API Documentation</a></p>
                 <p>Chat interface is being prepared...</p>
             </body>
@@ -358,13 +358,13 @@ except Exception:
 
 def main():
     """Run the API server"""
-    print("MULTILINGUAL RAG SYSTEM API")
-    print("=" * 50)
+    print("HSC BANGLA 1ST PAPER RAG SYSTEM - আপরিচিতা")
+    print("=" * 60)
     print("Starting server...")
     print("API Documentation: http://localhost:8000/docs")
     print("Chat Interface: http://localhost:8000/")
     print("Health Check: http://localhost:8000/health")
-    print("=" * 50)
+    print("=" * 60)
     
     uvicorn.run(
         "app:app",

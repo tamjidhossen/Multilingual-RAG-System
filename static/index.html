@@ -1,626 +1,656 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multilingual RAG System</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HSC Bangla RAG System - আপরিচিতা</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            background: #f8fafc;
-            color: #334155;
-            line-height: 1.6;
-        }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+          sans-serif;
+        background: #f8fafc;
+        color: #334155;
+        line-height: 1.6;
+      }
 
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 24px;
+        min-height: 100vh;
+      }
+
+      .chat-panel {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .chat-header {
+        padding: 24px;
+        border-bottom: 1px solid #e2e8f0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .chat-header h1 {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .chat-header p {
+        opacity: 0.9;
+        font-size: 14px;
+      }
+
+      .status-bar {
+        padding: 12px 24px;
+        background: #f1f5f9;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 14px;
+      }
+
+      .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #10b981;
+      }
+
+      .messages-container {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px;
+        max-height: 500px;
+      }
+
+      .message {
+        margin-bottom: 24px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .message.user {
+        align-items: flex-end;
+      }
+
+      .message.assistant {
+        align-items: flex-start;
+      }
+
+      .message-bubble {
+        max-width: 80%;
+        padding: 16px 20px;
+        border-radius: 20px;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+
+      .message.user .message-bubble {
+        background: #667eea;
+        color: white;
+        border-bottom-right-radius: 6px;
+      }
+
+      .message.assistant .message-bubble {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-bottom-left-radius: 6px;
+      }
+
+      .message-meta {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .confidence-badge {
+        background: #10b981;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+      }
+
+      .input-area {
+        padding: 24px;
+        border-top: 1px solid #e2e8f0;
+        background: white;
+      }
+
+      .input-container {
+        display: flex;
+        gap: 12px;
+        align-items: flex-end;
+      }
+
+      .input-wrapper {
+        flex: 1;
+        position: relative;
+      }
+
+      #messageInput {
+        width: 100%;
+        min-height: 48px;
+        max-height: 120px;
+        padding: 12px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 24px;
+        font-size: 15px;
+        font-family: inherit;
+        resize: none;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      #messageInput:focus {
+        border-color: #667eea;
+      }
+
+      #sendButton {
+        width: 48px;
+        height: 48px;
+        border: none;
+        border-radius: 50%;
+        background: #667eea;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        font-size: 18px;
+      }
+
+      #sendButton:hover:not(:disabled) {
+        background: #5a67d8;
+        transform: scale(1.05);
+      }
+
+      #sendButton:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .typing-indicator {
+        display: none;
+        padding: 16px 20px;
+        color: #64748b;
+        font-style: italic;
+        font-size: 14px;
+      }
+
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .sidebar-section {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .sidebar-header {
+        padding: 20px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        font-weight: 600;
+        font-size: 16px;
+      }
+
+      .sidebar-content {
+        padding: 20px;
+      }
+
+      .sample-query {
+        padding: 12px 16px;
+        margin-bottom: 8px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+
+      .sample-query:hover {
+        background: #e2e8f0;
+        border-color: #cbd5e1;
+      }
+
+      .sample-query:last-child {
+        margin-bottom: 0;
+      }
+
+      .stat-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        font-size: 14px;
+      }
+
+      .stat-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .stat-label {
+        color: #64748b;
+      }
+
+      .stat-value {
+        font-weight: 500;
+      }
+
+      .welcome-message {
+        text-align: center;
+        color: #64748b;
+        padding: 40px 20px;
+        font-style: italic;
+      }
+
+      .error-message {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #dc2626;
+        padding: 16px;
+        border-radius: 12px;
+        margin: 16px 0;
+        font-size: 14px;
+      }
+
+      @media (max-width: 768px) {
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            display: grid;
-            grid-template-columns: 1fr 320px;
-            gap: 24px;
-            min-height: 100vh;
-        }
-
-        .chat-panel {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .chat-header {
-            padding: 24px;
-            border-bottom: 1px solid #e2e8f0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .chat-header h1 {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .chat-header p {
-            opacity: 0.9;
-            font-size: 14px;
-        }
-
-        .status-bar {
-            padding: 12px 24px;
-            background: #f1f5f9;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 14px;
-        }
-
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #10b981;
-        }
-
-        .messages-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px;
-            max-height: 500px;
-        }
-
-        .message {
-            margin-bottom: 24px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .message.user {
-            align-items: flex-end;
-        }
-
-        .message.assistant {
-            align-items: flex-start;
-        }
-
-        .message-bubble {
-            max-width: 80%;
-            padding: 16px 20px;
-            border-radius: 20px;
-            font-size: 15px;
-            line-height: 1.5;
-        }
-
-        .message.user .message-bubble {
-            background: #667eea;
-            color: white;
-            border-bottom-right-radius: 6px;
-        }
-
-        .message.assistant .message-bubble {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-bottom-left-radius: 6px;
-        }
-
-        .message-meta {
-            font-size: 12px;
-            color: #64748b;
-            margin-top: 8px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .confidence-badge {
-            background: #10b981;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 500;
-        }
-
-        .input-area {
-            padding: 24px;
-            border-top: 1px solid #e2e8f0;
-            background: white;
-        }
-
-        .input-container {
-            display: flex;
-            gap: 12px;
-            align-items: flex-end;
-        }
-
-        .input-wrapper {
-            flex: 1;
-            position: relative;
-        }
-
-        #messageInput {
-            width: 100%;
-            min-height: 48px;
-            max-height: 120px;
-            padding: 12px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 24px;
-            font-size: 15px;
-            font-family: inherit;
-            resize: none;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        #messageInput:focus {
-            border-color: #667eea;
-        }
-
-        #sendButton {
-            width: 48px;
-            height: 48px;
-            border: none;
-            border-radius: 50%;
-            background: #667eea;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            font-size: 18px;
-        }
-
-        #sendButton:hover:not(:disabled) {
-            background: #5a67d8;
-            transform: scale(1.05);
-        }
-
-        #sendButton:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .typing-indicator {
-            display: none;
-            padding: 16px 20px;
-            color: #64748b;
-            font-style: italic;
-            font-size: 14px;
+          grid-template-columns: 1fr;
+          padding: 16px;
+          gap: 16px;
         }
 
         .sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
+          order: -1;
         }
 
-        .sidebar-section {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+        .messages-container {
+          max-height: 400px;
         }
 
-        .sidebar-header {
-            padding: 20px;
-            background: #f8fafc;
-            border-bottom: 1px solid #e2e8f0;
-            font-weight: 600;
-            font-size: 16px;
+        .message-bubble {
+          max-width: 90%;
         }
-
-        .sidebar-content {
-            padding: 20px;
-        }
-
-        .sample-query {
-            padding: 12px 16px;
-            margin-bottom: 8px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        .sample-query:hover {
-            background: #e2e8f0;
-            border-color: #cbd5e1;
-        }
-
-        .sample-query:last-child {
-            margin-bottom: 0;
-        }
-
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            font-size: 14px;
-        }
-
-        .stat-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .stat-label {
-            color: #64748b;
-        }
-
-        .stat-value {
-            font-weight: 500;
-        }
-
-        .welcome-message {
-            text-align: center;
-            color: #64748b;
-            padding: 40px 20px;
-            font-style: italic;
-        }
-
-        .error-message {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #dc2626;
-            padding: 16px;
-            border-radius: 12px;
-            margin: 16px 0;
-            font-size: 14px;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr;
-                padding: 16px;
-                gap: 16px;
-            }
-
-            .sidebar {
-                order: -1;
-            }
-
-            .messages-container {
-                max-height: 400px;
-            }
-
-            .message-bubble {
-                max-width: 90%;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="chat-panel">
-            <div class="chat-header">
-                <h1>Multilingual RAG System</h1>
-                <p>Ask questions in Bengali or English about Bengali literature</p>
-            </div>
-
-            <div class="status-bar">
-                <div class="status-indicator">
-                    <div class="status-dot"></div>
-                    <span id="statusText">System Ready</span>
-                </div>
-                <span id="queryCount">0 queries</span>
-            </div>
-
-            <div class="messages-container" id="messagesContainer">
-                <div class="welcome-message">
-                    <p>Welcome! I can help you find information from the Bengali literature corpus.</p>
-                    <p>Ask me questions in Bengali or English!</p>
-                </div>
-            </div>
-
-            <div class="typing-indicator" id="typingIndicator">
-                AI is thinking...
-            </div>
-
-            <div class="input-area">
-                <div class="input-container">
-                    <div class="input-wrapper">
-                        <textarea 
-                            id="messageInput" 
-                            placeholder="Ask your question in Bengali or English..."
-                            rows="1"
-                        ></textarea>
-                    </div>
-                    <button id="sendButton" title="Send message">
-                        →
-                    </button>
-                </div>
-            </div>
+      <div class="chat-panel">
+        <div class="chat-header">
+          <h1>HSC Bangla 1st Paper RAG System</h1>
+          <p>
+            Ask questions in Bengali or English about "আপরিচিতা" (Aporichita)
+          </p>
         </div>
 
-        <div class="sidebar">
-            <div class="sidebar-section">
-                <div class="sidebar-header">Sample Questions</div>
-                <div class="sidebar-content">
-                    <div class="sample-query" data-query="অনুপমের ভাষায় সুপুরুষ কাকে বলা হয়েছে?">
-                        অনুপমের ভাষায় সুপুরুষ কাকে বলা হয়েছে?
-                    </div>
-                    <div class="sample-query" data-query="কাকে অনুপমের ভাগ্য দেবতা বলে উল্লেখ করা হয়েছে?">
-                        কাকে অনুপমের ভাগ্য দেবতা বলে উল্লেখ করা হয়েছে?
-                    </div>
-                    <div class="sample-query" data-query="বিয়ের সময় কল্যাণীর প্রকৃত বয়স কত ছিল?">
-                        বিয়ের সময় কল্যাণীর প্রকৃত বয়স কত ছিল?
-                    </div>
-                    <div class="sample-query" data-query="Who is referred to as 'সুপুরুষ' in Anupam's language?">
-                        Who is referred to as 'সুপুরুষ' in Anupam's language?
-                    </div>
-                    <div class="sample-query" data-query="What was Kalyani's actual age at marriage?">
-                        What was Kalyani's actual age at marriage?
-                    </div>
-                </div>
-            </div>
-
-            <div class="sidebar-section">
-                <div class="sidebar-header">System Statistics</div>
-                <div class="sidebar-content">
-                    <div class="stat-row">
-                        <span class="stat-label">Status:</span>
-                        <span class="stat-value" id="systemStatus">Ready</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-label">Total Queries:</span>
-                        <span class="stat-value" id="totalQueries">0</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-label">Active Sessions:</span>
-                        <span class="stat-value" id="totalSessions">0</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-label">Avg Response:</span>
-                        <span class="stat-value" id="avgResponse">0.0s</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-label">Last Language:</span>
-                        <span class="stat-value" id="lastLanguage">-</span>
-                    </div>
-                </div>
-            </div>
+        <div class="status-bar">
+          <div class="status-indicator">
+            <div class="status-dot"></div>
+            <span id="statusText">System Ready</span>
+          </div>
+          <span id="queryCount">0 queries</span>
         </div>
+
+        <div class="messages-container" id="messagesContainer">
+          <div class="welcome-message">
+            <p>
+              Welcome! I can help you find information about HSC Bangla 1st
+              Paper's "আপরিচিতা".
+            </p>
+            <p>
+              Ask me questions in Bengali or English about this literary work!
+            </p>
+          </div>
+        </div>
+
+        <div class="typing-indicator" id="typingIndicator">
+          AI is thinking...
+        </div>
+
+        <div class="input-area">
+          <div class="input-container">
+            <div class="input-wrapper">
+              <textarea
+                id="messageInput"
+                placeholder="Ask your question in Bengali or English..."
+                rows="1"
+              ></textarea>
+            </div>
+            <button id="sendButton" title="Send message">→</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-header">Sample Questions</div>
+          <div class="sidebar-content">
+            <div
+              class="sample-query"
+              data-query="অনুপমের ভাষায় সুপুরুষ কাকে বলা হয়েছে?"
+            >
+              অনুপমের ভাষায় সুপুরুষ কাকে বলা হয়েছে?
+            </div>
+            <div
+              class="sample-query"
+              data-query="কাকে অনুপমের ভাগ্য দেবতা বলে উল্লেখ করা হয়েছে?"
+            >
+              কাকে অনুপমের ভাগ্য দেবতা বলে উল্লেখ করা হয়েছে?
+            </div>
+            <div
+              class="sample-query"
+              data-query="বিয়ের সময় কল্যাণীর প্রকৃত বয়স কত ছিল?"
+            >
+              বিয়ের সময় কল্যাণীর প্রকৃত বয়স কত ছিল?
+            </div>
+            <div
+              class="sample-query"
+              data-query="Who is referred to as 'সুপুরুষ' in Anupam's language?"
+            >
+              Who is referred to as 'সুপুরুষ' in Anupam's language?
+            </div>
+            <div
+              class="sample-query"
+              data-query="What was Kalyani's actual age at marriage?"
+            >
+              What was Kalyani's actual age at marriage?
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-header">System Statistics</div>
+          <div class="sidebar-content">
+            <div class="stat-row">
+              <span class="stat-label">Status:</span>
+              <span class="stat-value" id="systemStatus">Ready</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Total Queries:</span>
+              <span class="stat-value" id="totalQueries">0</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Active Sessions:</span>
+              <span class="stat-value" id="totalSessions">0</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Avg Response:</span>
+              <span class="stat-value" id="avgResponse">0.0s</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Last Language:</span>
+              <span class="stat-value" id="lastLanguage">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
-        class ChatInterface {
-            constructor() {
-                this.messageInput = document.getElementById('messageInput');
-                this.sendButton = document.getElementById('sendButton');
-                this.messagesContainer = document.getElementById('messagesContainer');
-                this.typingIndicator = document.getElementById('typingIndicator');
-                this.statusText = document.getElementById('statusText');
-                this.queryCount = document.getElementById('queryCount');
-                
-                this.sessionId = null;
-                
-                this.setupEventListeners();
-                this.initializeSession();
-                this.checkSystemHealth();
-                this.updateStats();
-                
-                this.messageInput.addEventListener('input', this.autoResize.bind(this));
-            }
+      class ChatInterface {
+        constructor() {
+          this.messageInput = document.getElementById("messageInput");
+          this.sendButton = document.getElementById("sendButton");
+          this.messagesContainer = document.getElementById("messagesContainer");
+          this.typingIndicator = document.getElementById("typingIndicator");
+          this.statusText = document.getElementById("statusText");
+          this.queryCount = document.getElementById("queryCount");
 
-            async initializeSession() {
-                try {
-                    const response = await fetch('/session/create', {
-                        method: 'POST'
-                    });
-                    const data = await response.json();
-                    this.sessionId = data.session_id;
-                    console.log('Session created:', this.sessionId);
-                } catch (error) {
-                    console.error('Failed to create session:', error);
-                }
-            }
+          this.sessionId = null;
 
-            setupEventListeners() {
-                this.sendButton.addEventListener('click', () => this.sendMessage());
-                this.messageInput.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        this.sendMessage();
-                    }
-                });
+          this.setupEventListeners();
+          this.initializeSession();
+          this.checkSystemHealth();
+          this.updateStats();
 
-                document.querySelectorAll('.sample-query').forEach(button => {
-                    button.addEventListener('click', () => {
-                        const query = button.getAttribute('data-query');
-                        this.messageInput.value = query;
-                        this.autoResize();
-                        this.sendMessage();
-                    });
-                });
-            }
-
-            autoResize() {
-                this.messageInput.style.height = 'auto';
-                this.messageInput.style.height = Math.min(this.messageInput.scrollHeight, 120) + 'px';
-            }
-
-            async checkSystemHealth() {
-                try {
-                    const response = await fetch('/health');
-                    const data = await response.json();
-                    
-                    if (data.status === 'healthy') {
-                        this.statusText.textContent = 'System Ready';
-                        document.getElementById('systemStatus').textContent = 'Ready';
-                    } else {
-                        this.statusText.textContent = 'System Loading...';
-                        document.getElementById('systemStatus').textContent = 'Loading';
-                    }
-                } catch (error) {
-                    this.statusText.textContent = 'System Offline';
-                    document.getElementById('systemStatus').textContent = 'Offline';
-                    console.error('Health check failed:', error);
-                }
-            }
-
-            async updateStats() {
-                try {
-                    const response = await fetch('/stats');
-                    const data = await response.json();
-                    
-                    document.getElementById('totalQueries').textContent = data.total_queries;
-                    document.getElementById('avgResponse').textContent = `${data.avg_response_time}s`;
-                    this.queryCount.textContent = `${data.total_queries} queries`;
-                    
-                    if (data.memory_stats) {
-                        const memStats = data.memory_stats;
-                        document.getElementById('totalSessions').textContent = memStats.total_sessions || 0;
-                    }
-                } catch (error) {
-                    console.error('Stats update failed:', error);
-                }
-            }
-
-            addMessage(content, isUser = false, metadata = {}) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${isUser ? 'user' : 'assistant'}`;
-                
-                const bubbleDiv = document.createElement('div');
-                bubbleDiv.className = 'message-bubble';
-                bubbleDiv.textContent = content;
-                
-                messageDiv.appendChild(bubbleDiv);
-                
-                if (!isUser && metadata) {
-                    const metaDiv = document.createElement('div');
-                    metaDiv.className = 'message-meta';
-                    
-                    let metaContent = '';
-                    if (metadata.response_time) {
-                        metaContent += `${metadata.response_time}s`;
-                    }
-                    if (metadata.language) {
-                        metaContent += ` • ${metadata.language}`;
-                        document.getElementById('lastLanguage').textContent = metadata.language;
-                    }
-                    if (metadata.confidence !== undefined) {
-                        const confidence = Math.round(metadata.confidence * 100);
-                        metaContent += ` • <span class="confidence-badge">${confidence}%</span>`;
-                    }
-                    if (metadata.sources_count) {
-                        metaContent += ` • ${metadata.sources_count} sources`;
-                    }
-                    
-                    metaDiv.innerHTML = metaContent;
-                    messageDiv.appendChild(metaDiv);
-                }
-                
-                this.messagesContainer.appendChild(messageDiv);
-                this.scrollToBottom();
-            }
-
-            showTyping() {
-                this.typingIndicator.style.display = 'block';
-                this.scrollToBottom();
-            }
-
-            hideTyping() {
-                this.typingIndicator.style.display = 'none';
-            }
-
-            showError(message) {
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'error-message';
-                errorDiv.textContent = `Error: ${message}`;
-                this.messagesContainer.appendChild(errorDiv);
-                this.scrollToBottom();
-            }
-
-            scrollToBottom() {
-                this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
-            }
-
-            async sendMessage() {
-                const message = this.messageInput.value.trim();
-                if (!message) return;
-
-                this.messageInput.value = '';
-                this.autoResize();
-                this.sendButton.disabled = true;
-
-                this.addMessage(message, true);
-                this.showTyping();
-
-                try {
-                    const requestBody = {
-                        query: message,
-                        k: 5
-                    };
-                    
-                    if (this.sessionId) {
-                        requestBody.session_id = this.sessionId;
-                    }
-
-                    const response = await fetch('/chat', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(requestBody)
-                    });
-
-                    this.hideTyping();
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.error || 'Server error');
-                    }
-
-                    const data = await response.json();
-
-                    this.addMessage(data.answer, false, {
-                        response_time: data.response_time,
-                        language: data.language,
-                        confidence: data.confidence,
-                        sources_count: data.sources_count
-                    });
-
-                    // Update session ID if returned
-                    if (data.session_id && !this.sessionId) {
-                        this.sessionId = data.session_id;
-                    }
-
-                    this.updateStats();
-
-                } catch (error) {
-                    this.hideTyping();
-                    this.showError(error.message);
-                    console.error('Send message error:', error);
-                } finally {
-                    this.sendButton.disabled = false;
-                    this.messageInput.focus();
-                }
-            }
+          this.messageInput.addEventListener(
+            "input",
+            this.autoResize.bind(this)
+          );
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            new ChatInterface();
-        });
+        async initializeSession() {
+          try {
+            const response = await fetch("/session/create", {
+              method: "POST",
+            });
+            const data = await response.json();
+            this.sessionId = data.session_id;
+            console.log("Session created:", this.sessionId);
+          } catch (error) {
+            console.error("Failed to create session:", error);
+          }
+        }
+
+        setupEventListeners() {
+          this.sendButton.addEventListener("click", () => this.sendMessage());
+          this.messageInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              this.sendMessage();
+            }
+          });
+
+          document.querySelectorAll(".sample-query").forEach((button) => {
+            button.addEventListener("click", () => {
+              const query = button.getAttribute("data-query");
+              this.messageInput.value = query;
+              this.autoResize();
+              this.sendMessage();
+            });
+          });
+        }
+
+        autoResize() {
+          this.messageInput.style.height = "auto";
+          this.messageInput.style.height =
+            Math.min(this.messageInput.scrollHeight, 120) + "px";
+        }
+
+        async checkSystemHealth() {
+          try {
+            const response = await fetch("/health");
+            const data = await response.json();
+
+            if (data.status === "healthy") {
+              this.statusText.textContent = "System Ready";
+              document.getElementById("systemStatus").textContent = "Ready";
+            } else {
+              this.statusText.textContent = "System Loading...";
+              document.getElementById("systemStatus").textContent = "Loading";
+            }
+          } catch (error) {
+            this.statusText.textContent = "System Offline";
+            document.getElementById("systemStatus").textContent = "Offline";
+            console.error("Health check failed:", error);
+          }
+        }
+
+        async updateStats() {
+          try {
+            const response = await fetch("/stats");
+            const data = await response.json();
+
+            document.getElementById("totalQueries").textContent =
+              data.total_queries;
+            document.getElementById(
+              "avgResponse"
+            ).textContent = `${data.avg_response_time}s`;
+            this.queryCount.textContent = `${data.total_queries} queries`;
+
+            if (data.memory_stats) {
+              const memStats = data.memory_stats;
+              document.getElementById("totalSessions").textContent =
+                memStats.total_sessions || 0;
+            }
+          } catch (error) {
+            console.error("Stats update failed:", error);
+          }
+        }
+
+        addMessage(content, isUser = false, metadata = {}) {
+          const messageDiv = document.createElement("div");
+          messageDiv.className = `message ${isUser ? "user" : "assistant"}`;
+
+          const bubbleDiv = document.createElement("div");
+          bubbleDiv.className = "message-bubble";
+          bubbleDiv.textContent = content;
+
+          messageDiv.appendChild(bubbleDiv);
+
+          if (!isUser && metadata) {
+            const metaDiv = document.createElement("div");
+            metaDiv.className = "message-meta";
+
+            let metaContent = "";
+            if (metadata.response_time) {
+              metaContent += `${metadata.response_time}s`;
+            }
+            if (metadata.language) {
+              metaContent += ` • ${metadata.language}`;
+              document.getElementById("lastLanguage").textContent =
+                metadata.language;
+            }
+            if (metadata.confidence !== undefined) {
+              const confidence = Math.round(metadata.confidence * 100);
+              metaContent += ` • <span class="confidence-badge">${confidence}%</span>`;
+            }
+            if (metadata.sources_count) {
+              metaContent += ` • ${metadata.sources_count} sources`;
+            }
+
+            metaDiv.innerHTML = metaContent;
+            messageDiv.appendChild(metaDiv);
+          }
+
+          this.messagesContainer.appendChild(messageDiv);
+          this.scrollToBottom();
+        }
+
+        showTyping() {
+          this.typingIndicator.style.display = "block";
+          this.scrollToBottom();
+        }
+
+        hideTyping() {
+          this.typingIndicator.style.display = "none";
+        }
+
+        showError(message) {
+          const errorDiv = document.createElement("div");
+          errorDiv.className = "error-message";
+          errorDiv.textContent = `Error: ${message}`;
+          this.messagesContainer.appendChild(errorDiv);
+          this.scrollToBottom();
+        }
+
+        scrollToBottom() {
+          this.messagesContainer.scrollTop =
+            this.messagesContainer.scrollHeight;
+        }
+
+        async sendMessage() {
+          const message = this.messageInput.value.trim();
+          if (!message) return;
+
+          this.messageInput.value = "";
+          this.autoResize();
+          this.sendButton.disabled = true;
+
+          this.addMessage(message, true);
+          this.showTyping();
+
+          try {
+            const requestBody = {
+              query: message,
+              k: 5,
+            };
+
+            if (this.sessionId) {
+              requestBody.session_id = this.sessionId;
+            }
+
+            const response = await fetch("/chat", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(requestBody),
+            });
+
+            this.hideTyping();
+
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || "Server error");
+            }
+
+            const data = await response.json();
+
+            this.addMessage(data.answer, false, {
+              response_time: data.response_time,
+              language: data.language,
+              confidence: data.confidence,
+              sources_count: data.sources_count,
+            });
+
+            // Update session ID if returned
+            if (data.session_id && !this.sessionId) {
+              this.sessionId = data.session_id;
+            }
+
+            this.updateStats();
+          } catch (error) {
+            this.hideTyping();
+            this.showError(error.message);
+            console.error("Send message error:", error);
+          } finally {
+            this.sendButton.disabled = false;
+            this.messageInput.focus();
+          }
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        new ChatInterface();
+      });
     </script>
-</body>
+  </body>
 </html>
