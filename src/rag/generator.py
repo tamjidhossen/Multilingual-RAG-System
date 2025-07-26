@@ -98,7 +98,8 @@ class ResponseGenerator:
 নির্দেশনা:
 - শুধুমাত্র প্রদত্ত তথ্যের ভিত্তিতে উত্তর দিন
 - উত্তর সংক্ষিপ্ত এবং সঠিক হতে হবে
-- তথ্য খুঁজে না পেলে স্পষ্টভাবে বলুন"""
+- তথ্য না জানলে বলুন "আমার এই বিষয়ে জ্ঞান নেই"
+- কোনো তথ্যসূত্র বা রেফারেন্স উল্লেখ করবেন না"""
         
         if query_type == 'mcq':
             base_prompt += "\n- বহুনির্বাচনী প্রশ্নের ক্ষেত্রে সঠিক উত্তর দিন"
@@ -117,7 +118,8 @@ Question: {query}
 Instructions:
 - Answer based only on the information provided
 - Keep the answer concise and accurate
-- If the answer is not available, clearly state that the information is not found"""
+- If you don't know something, say "I don't have knowledge about this"
+- Do not include any source references or citations"""
         
         if query_type == 'mcq':
             base_prompt += "\n- For multiple choice questions, provide the correct answer"
@@ -129,9 +131,9 @@ Instructions:
         language = query_data['language']
         
         if language == 'bn':
-            answer = "দুঃখিত, আপনার প্রশ্নের সাথে সম্পর্কিত কোনো তথ্য খুঁজে পাওয়া যায়নি। অন্যভাবে প্রশ্ন করার চেষ্টা করুন।"
+            answer = "আমার এই বিষয়ে জ্ঞান নেই। অন্যভাবে প্রশ্ন করার চেষ্টা করুন।"
         else:
-            answer = "Sorry, I couldn't find any relevant information for your question. Please try rephrasing your question."
+            answer = "I don't have knowledge about this. Please try rephrasing your question."
         
         return {
             'answer': answer,
