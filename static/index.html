@@ -101,7 +101,7 @@
       }
 
       .message-bubble {
-        max-width: 80%;
+        max-width: 85%;
         padding: 16px 20px;
         border-radius: 20px;
         font-size: 15px;
@@ -118,6 +118,85 @@
         background: #f8fafc;
         border: 1px solid #e2e8f0;
         border-bottom-left-radius: 6px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+
+      .message-content {
+        line-height: 1.6;
+      }
+
+      .message-content h3 {
+        color: #1e293b;
+        font-size: 16px;
+        font-weight: 600;
+        margin: 16px 0 8px 0;
+        border-left: 4px solid #667eea;
+        padding-left: 12px;
+      }
+
+      .message-content h4 {
+        color: #334155;
+        font-size: 15px;
+        font-weight: 600;
+        margin: 16px 0 8px 0;
+        padding: 8px 12px;
+        background: #e2e8f0;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+      }
+
+      .message-content ul {
+        margin: 8px 0;
+        padding-left: 0;
+        list-style: none;
+      }
+
+      .message-content li {
+        margin: 8px 0;
+        padding: 8px 12px;
+        background: #f1f5f9;
+        border-radius: 8px;
+        border-left: 3px solid #e2e8f0;
+      }
+
+      .message-content li strong {
+        color: #1e293b;
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .message-content .answer-options {
+        margin: 6px 0 6px 16px;
+        font-size: 14px;
+      }
+
+      .message-content .answer-options li {
+        background: #fafafa;
+        border-left: 2px solid #cbd5e1;
+        margin: 3px 0;
+        padding: 4px 8px;
+        border-radius: 4px;
+      }
+
+      .message-content .answer-option {
+        background: #fafafa !important;
+        border-left: 2px solid #cbd5e1 !important;
+        margin: 3px 0 !important;
+        padding: 4px 8px !important;
+        border-radius: 4px !important;
+      }
+
+      .message-content .correct-answer {
+        background: #dcfce7 !important;
+        border-left-color: #22c55e !important;
+        font-weight: 500;
+      }
+
+      .message-content .question-number {
+        color: #667eea;
+        font-weight: 600;
+        margin-right: 8px;
       }
 
       .message-meta {
@@ -525,13 +604,53 @@
           }
         }
 
+        formatResponse(content) {
+          // Format structured content for better readability
+          let formatted = content;
+          
+          // Convert markdown-style lists to HTML
+          formatted = formatted.replace(/^\* \*\*(.*?)\*\*/gm, '<li><strong>$1</strong></li>');
+          formatted = formatted.replace(/^\* (.*?)$/gm, '<li>$1</li>');
+          
+          // Wrap consecutive list items in ul tags
+          formatted = formatted.replace(/(<li>.*?<\/li>\s*)+/gs, '<ul>$&</ul>');
+          
+          // Format question patterns
+          formatted = formatted.replace(/\*\*(প্রশ্ন [\d]+:)\*\*(.*?)$/gm, '<h4><span class="question-number">$1</span>$2</h4>');
+          
+          // Format multiple choice options
+          formatted = formatted.replace(/\* ([ক-ঘ]\).*?)$/gm, '<li class="answer-option">$1</li>');
+          formatted = formatted.replace(/\* ([a-d]\).*?)$/gm, '<li class="answer-option">$1</li>');
+          
+          // Format correct answers
+          formatted = formatted.replace(/\*\*(সঠিক উত্তর:)\*\*(.*?)$/gm, '<li class="correct-answer"><strong>$1</strong>$2</li>');
+          formatted = formatted.replace(/\*\*(Correct Answer:)\*\*(.*?)$/gm, '<li class="correct-answer"><strong>$1</strong>$2</li>');
+          
+          // Group answer options
+          formatted = formatted.replace(/(<li class="answer-option">.*?<\/li>\s*)+/gs, '<ul class="answer-options">$&</ul>');
+          
+          // Format bold text
+          formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+          
+          // Convert line breaks to proper HTML
+          formatted = formatted.replace(/\n\n/g, '<br><br>');
+          formatted = formatted.replace(/\n/g, '<br>');
+          
+          return `<div class="message-content">${formatted}</div>`;
+        }
+
         addMessage(content, isUser = false, metadata = {}) {
           const messageDiv = document.createElement("div");
           messageDiv.className = `message ${isUser ? "user" : "assistant"}`;
 
           const bubbleDiv = document.createElement("div");
           bubbleDiv.className = "message-bubble";
-          bubbleDiv.textContent = content;
+          
+          if (isUser) {
+            bubbleDiv.textContent = content;
+          } else {
+            bubbleDiv.innerHTML = this.formatResponse(content);
+          }
 
           messageDiv.appendChild(bubbleDiv);
 
