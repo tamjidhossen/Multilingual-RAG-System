@@ -17,7 +17,8 @@ class Settings:
     
     def __init__(self):
         # Project paths
-        self.PROJECT_ROOT = Path(__file__).parent.parent.parent
+        self.BASE_DIR = Path(__file__).parent.parent.parent
+        self.PROJECT_ROOT = self.BASE_DIR
         self.DATA_DIR = self.PROJECT_ROOT / "data"
         self.LOGS_DIR = self.PROJECT_ROOT / "logs"
         
