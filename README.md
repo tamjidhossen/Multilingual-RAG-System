@@ -61,6 +61,7 @@ This system processes the HSC26 Bangla 1st paper PDF document using **Gemini 2.5
    ```
 
 5. **Place PDF document**
+
    ```bash
    # Ensure HSC26-Bangla1st-Paper.pdf is in the data/ directory
    mkdir -p data
@@ -68,10 +69,11 @@ This system processes the HSC26 Bangla 1st paper PDF document using **Gemini 2.5
    ```
 
 6. **Test OCR System**
+
    ```bash
    # Quick test with first 2 pages
    python test_ocr_quick.py
-   
+
    # Full document processing (will take 20-30 minutes due to rate limits)
    python test_ocr_processing.py
    ```
@@ -84,9 +86,8 @@ Edit the `.env` file with your settings:
 # Required
 GOOGLE_API_KEY=your_gemini_api_key_here
 
-# OCR Models (with rate limits)
+# OCR Configuration (simplified)
 GEMINI_OCR_MODEL=gemini-2.5-pro      # 5 RPM, 250k TPM, 100 RPD
-GEMINI_PROCESSING_MODEL=gemini-2.5-flash  # 10 RPM, 250k TPM, 250 RPD
 EMBEDDING_MODEL=gemini-embedding-001
 
 # Optional (defaults provided)
@@ -98,6 +99,7 @@ LOG_LEVEL=INFO
 ## ⚠️ Rate Limits & Processing Time
 
 The system uses Gemini 2.5 Pro for OCR which has strict rate limits:
+
 - **Gemini 2.5 Pro**: 5 requests/minute, 100 requests/day
 - **Processing Time**: ~20-30 minutes for full 49-page document
 - **Automatic Rate Limiting**: Built-in delays to respect API limits
@@ -128,9 +130,7 @@ Multilingual-RAG-System/
 ├── test_ocr_quick.py      # Quick 2-page OCR test
 ├── test_ocr_processing.py # Full document OCR processing
 └── processed_documents/   # Generated OCR output (created automatically)
-    ├── raw_ocr_output.txt      # Raw extracted text
-    ├── structured_content.json # Structured JSON with MCQs
-    └── readable_content.txt    # Human-readable format
+    └── raw_ocr_output.txt      # Clean Bengali text for vector embedding
 ```
 
 ## Development Phases
@@ -170,10 +170,8 @@ python test_ocr_quick.py
 # Process entire 49-page document (takes 20-30 minutes)
 python test_ocr_processing.py
 
-# Output files generated:
-# - processed_documents/raw_ocr_output.txt
-# - processed_documents/structured_content.json  
-# - processed_documents/readable_content.txt
+# Output file generated:
+# - processed_documents/raw_ocr_output.txt (Clean Bengali text ready for vector embedding)
 ```
 
 ### Sample OCR Output
@@ -187,7 +185,7 @@ The system extracts clean Bengali text like:
 📖 প্রাক-মূল্যায়ন
 ১। অনুপমের বাবা কী করে জীবিকা নির্বাহ করতেন?
 ক) ডাক্তারি
-খ) ওকালতি  
+খ) ওকালতি
 গ) মাস্টারি
 ঘ) ব্যবসা
 ```
@@ -222,11 +220,11 @@ Once the system is complete, it will handle queries like:
 
 ## 🎯 Key Improvements Over Traditional PDF Processing
 
-| Aspect | Traditional (pypdf/pdfplumber) | OCR-based (Gemini 2.5 Pro) |
-|--------|-------------------------------|----------------------------|
-| **Bengali Text Quality** | Broken Unicode, gibberish | Perfect Unicode, readable |
-| **MCQ Recognition** | Manual parsing required | Automatic question-answer mapping |  
-| **Table Extraction** | Complex formatting issues | Structured table conversion |
-| **Accuracy** | ~60-70% for Bengali | ~95%+ for Bengali |
-| **Processing Time** | Fast but poor quality | Slower but high quality |
-| **Abbreviation Handling** | Manual expansion needed | Automatic with context |
+| Aspect                    | Traditional (pypdf/pdfplumber) | OCR-based (Gemini 2.5 Pro)        |
+| ------------------------- | ------------------------------ | --------------------------------- |
+| **Bengali Text Quality**  | Broken Unicode, gibberish      | Perfect Unicode, readable         |
+| **MCQ Recognition**       | Manual parsing required        | Automatic question-answer mapping |
+| **Table Extraction**      | Complex formatting issues      | Structured table conversion       |
+| **Accuracy**              | ~60-70% for Bengali            | ~95%+ for Bengali                 |
+| **Processing Time**       | Fast but poor quality          | Slower but high quality           |
+| **Abbreviation Handling** | Manual expansion needed        | Automatic with context            |
