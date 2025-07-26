@@ -607,35 +607,59 @@
         formatResponse(content) {
           // Format structured content for better readability
           let formatted = content;
-          
+
           // Convert markdown-style lists to HTML
-          formatted = formatted.replace(/^\* \*\*(.*?)\*\*/gm, '<li><strong>$1</strong></li>');
-          formatted = formatted.replace(/^\* (.*?)$/gm, '<li>$1</li>');
-          
+          formatted = formatted.replace(
+            /^\* \*\*(.*?)\*\*/gm,
+            "<li><strong>$1</strong></li>"
+          );
+          formatted = formatted.replace(/^\* (.*?)$/gm, "<li>$1</li>");
+
           // Wrap consecutive list items in ul tags
-          formatted = formatted.replace(/(<li>.*?<\/li>\s*)+/gs, '<ul>$&</ul>');
-          
+          formatted = formatted.replace(/(<li>.*?<\/li>\s*)+/gs, "<ul>$&</ul>");
+
           // Format question patterns
-          formatted = formatted.replace(/\*\*(প্রশ্ন [\d]+:)\*\*(.*?)$/gm, '<h4><span class="question-number">$1</span>$2</h4>');
-          
+          formatted = formatted.replace(
+            /\*\*(প্রশ্ন [\d]+:)\*\*(.*?)$/gm,
+            '<h4><span class="question-number">$1</span>$2</h4>'
+          );
+
           // Format multiple choice options
-          formatted = formatted.replace(/\* ([ক-ঘ]\).*?)$/gm, '<li class="answer-option">$1</li>');
-          formatted = formatted.replace(/\* ([a-d]\).*?)$/gm, '<li class="answer-option">$1</li>');
-          
+          formatted = formatted.replace(
+            /\* ([ক-ঘ]\).*?)$/gm,
+            '<li class="answer-option">$1</li>'
+          );
+          formatted = formatted.replace(
+            /\* ([a-d]\).*?)$/gm,
+            '<li class="answer-option">$1</li>'
+          );
+
           // Format correct answers
-          formatted = formatted.replace(/\*\*(সঠিক উত্তর:)\*\*(.*?)$/gm, '<li class="correct-answer"><strong>$1</strong>$2</li>');
-          formatted = formatted.replace(/\*\*(Correct Answer:)\*\*(.*?)$/gm, '<li class="correct-answer"><strong>$1</strong>$2</li>');
-          
+          formatted = formatted.replace(
+            /\*\*(সঠিক উত্তর:)\*\*(.*?)$/gm,
+            '<li class="correct-answer"><strong>$1</strong>$2</li>'
+          );
+          formatted = formatted.replace(
+            /\*\*(Correct Answer:)\*\*(.*?)$/gm,
+            '<li class="correct-answer"><strong>$1</strong>$2</li>'
+          );
+
           // Group answer options
-          formatted = formatted.replace(/(<li class="answer-option">.*?<\/li>\s*)+/gs, '<ul class="answer-options">$&</ul>');
-          
+          formatted = formatted.replace(
+            /(<li class="answer-option">.*?<\/li>\s*)+/gs,
+            '<ul class="answer-options">$&</ul>'
+          );
+
           // Format bold text
-          formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-          
+          formatted = formatted.replace(
+            /\*\*(.*?)\*\*/g,
+            "<strong>$1</strong>"
+          );
+
           // Convert line breaks to proper HTML
-          formatted = formatted.replace(/\n\n/g, '<br><br>');
-          formatted = formatted.replace(/\n/g, '<br>');
-          
+          formatted = formatted.replace(/\n\n/g, "<br><br>");
+          formatted = formatted.replace(/\n/g, "<br>");
+
           return `<div class="message-content">${formatted}</div>`;
         }
 
@@ -645,7 +669,7 @@
 
           const bubbleDiv = document.createElement("div");
           bubbleDiv.className = "message-bubble";
-          
+
           if (isUser) {
             bubbleDiv.textContent = content;
           } else {
