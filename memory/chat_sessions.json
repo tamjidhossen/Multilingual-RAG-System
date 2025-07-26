@@ -20,7 +20,132 @@
       "last_activity": 1753549501.8360882,
       "messages": [],
       "message_count": 0
+    },
+    {
+      "session_id": "session_1753549804_2188",
+      "created_at": 1753549804.4586413,
+      "last_activity": 1753549814.656936,
+      "messages": [
+        {
+          "timestamp": 1753549814.656936,
+          "query": "বাংলা ব্যাকরণ কি?",
+          "response": "আমার এই বিষয়ে জ্ঞান নেই।",
+          "language": "bn",
+          "confidence": 0.3715793609619141,
+          "session_id": "session_1753549804_2188",
+          "sources_used": [
+            "general_0_4739"
+          ]
+        }
+      ],
+      "message_count": 1
+    },
+    {
+      "session_id": "session_1753549837_8745",
+      "created_at": 1753549837.1077466,
+      "last_activity": 1753549872.8374922,
+      "messages": [
+        {
+          "timestamp": 1753549843.9322498,
+          "query": "কাকে অনুপমের ভাগ্য দেবতা বলে উল্লেখ করা হয়েছে?",
+          "response": "মামাকে",
+          "language": "bn",
+          "confidence": 0.6517391085624694,
+          "session_id": "session_1753549837_8745",
+          "sources_used": [
+            "mcq_144_8294",
+            "mcq_11_1254",
+            "mcq_3_2427"
+          ]
+        },
+        {
+          "timestamp": 1753549854.0710566,
+          "query": "is mama dead?",
+          "response": "I don't have knowledge about this.",
+          "language": "en",
+          "confidence": 0.3803500413894653,
+          "session_id": "session_1753549837_8745",
+          "sources_used": [
+            "mcq_109_5859",
+            "mcq_152_3276"
+          ]
+        },
+        {
+          "timestamp": 1753549862.8195734,
+          "query": "what is my last query?",
+          "response": "I don't have knowledge about this. Please try asking more specifically.",
+          "language": "en",
+          "confidence": 0.0,
+          "session_id": "session_1753549837_8745",
+          "sources_used": []
+        },
+        {
+          "timestamp": 1753549872.8374922,
+          "query": "are you dumb?",
+          "response": "I don't have data on this topic. Try asking in a different way.",
+          "language": "en",
+          "confidence": 0.0,
+          "session_id": "session_1753549837_8745",
+          "sources_used": []
+        }
+      ],
+      "message_count": 4
+    },
+    {
+      "session_id": "session_1753549883_8427",
+      "created_at": 1753549883.8413656,
+      "last_activity": 1753549883.8413656,
+      "messages": [],
+      "message_count": 0
+    },
+    {
+      "session_id": "session_1753550191_969",
+      "created_at": 1753550191.9796004,
+      "last_activity": 1753550236.8242805,
+      "messages": [
+        {
+          "timestamp": 1753550195.6843188,
+          "query": "অনুপমের বাবা কী করতেন?",
+          "response": "অনুপমের বাবা ওকালতি করে জীবিকা নির্বাহ করতেন।",
+          "language": "bn",
+          "confidence": 0.7803916454315185,
+          "session_id": "session_1753550191_969",
+          "sources_used": [
+            "mcq_3_2427",
+            "mcq_10_2427",
+            "mcq_174_3263"
+          ]
+        },
+        {
+          "timestamp": 1753550214.9591908,
+          "query": "what was my last query?",
+          "response": "Your last question was: \"অনুপমের বাবা কী করতেন?\"",
+          "language": "en",
+          "confidence": 1.0,
+          "session_id": "session_1753550191_969",
+          "sources_used": []
+        },
+        {
+          "timestamp": 1753550227.87085,
+          "query": "আমার আগের প্রশ্ন কী ছিল?",
+          "response": "আপনার শেষ প্রশ্ন ছিল: \"what was my last query?\"",
+          "language": "bn",
+          "confidence": 1.0,
+          "session_id": "session_1753550191_969",
+          "sources_used": []
+        },
+        {
+          "timestamp": 1753550236.8242805,
+          "query": "আমার শেষ প্রশ্ন কী ছিল?",
+          "response": "আপনার শেষ প্রশ্ন ছিল: \"আমার আগের প্রশ্ন কী ছিল?\"",
+          "language": "bn",
+          "confidence": 1.0,
+          "session_id": "session_1753550191_969",
+          "sources_used": []
+        }
+      ],
+      "message_count": 4
     }
   ],
-  "last_updated": 1753549553.9964566
+  "last_updated": 1753550247.261444
 }

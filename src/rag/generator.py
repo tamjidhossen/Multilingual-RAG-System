@@ -19,22 +19,32 @@ class ResponseGenerator:
         self.model = genai.GenerativeModel(self.settings.gemini_model)
     
     def generate_response(self, query_data: Dict[str, Any], 
-                         retrieved_docs: List[Dict[str, Any]]) -> Dict[str, Any]:
+                         retrieved_docs: List[Dict[str, Any]], 
+                         chat_history: List = None) -> Dict[str, Any]:
         """
         Generate response based on query and retrieved documents
         
         Args:
             query_data: Processed query information
             retrieved_docs: List of relevant documents
+            chat_history: Previous chat messages for context
             
         Returns:
             Generated response with metadata
         """
+        # Check if this is a memory/history related query
+        if self._is_memory_query(query_data):
+            return self._handle_memory_query(query_data, chat_history)
+        
         if not retrieved_docs:
             return self._generate_no_context_response(query_data)
         
         # Prepare context from retrieved documents
         context = self._prepare_context(retrieved_docs)
+        
+        # Add chat history context if available
+        if chat_history:
+            context = self._add_chat_context(context, chat_history, query_data['language'])
         
         # Generate prompt based on query language and type
         prompt = self._build_prompt(query_data, context)
@@ -161,3 +171,82 @@ Instructions:
             return "দুঃখিত, উত্তর তৈরি করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।"
         else:
             return "Sorry, there was an error generating the response. Please try again."
+    
+    def _is_memory_query(self, query_data: Dict[str, Any]) -> bool:
+        """Check if the query is asking about conversation history"""
+        query = query_data['cleaned_query'].lower()
+        language = query_data['language']
+        
+        if language == 'bn':
+            memory_keywords = [
+                'আগের প্রশ্ন', 'শেষ প্রশ্ন', 'পূর্বের প্রশ্ন', 'আগে কী জিজ্ঞেস',
+                'আগে কি জিজ্ঞেস', 'আগের উত্তর', 'শেষ উত্তর', 'পূর্বের উত্তর',
+                'আমার আগের', 'আমার শেষ', 'আমার পূর্বের'
+            ]
+        else:
+            memory_keywords = [
+                'my last query', 'my previous query', 'last question', 'previous question',
+                'what did i ask', 'what was my question', 'my last question',
+                'previous answer', 'last answer', 'what did you say', 'before'
+            ]
+        
+        return any(keyword in query for keyword in memory_keywords)
+    
+    def _handle_memory_query(self, query_data: Dict[str, Any], chat_history: List) -> Dict[str, Any]:
+        """Handle queries about conversation history"""
+        language = query_data['language']
+        
+        if not chat_history or len(chat_history) == 0:
+            if language == 'bn':
+                answer = "এই কথোপকথনে এখনো কোনো আগের প্রশ্ন নেই।"
+            else:
+                answer = "There are no previous questions in this conversation yet."
+        else:
+            # Get the last message from history
+            last_message = chat_history[-1]
+            
+            if language == 'bn':
+                if 'প্রশ্ন' in query_data['cleaned_query'] or 'জিজ্ঞেস' in query_data['cleaned_query']:
+                    answer = f"আপনার শেষ প্রশ্ন ছিল: \"{last_message.query}\""
+                elif 'উত্তর' in query_data['cleaned_query']:
+                    answer = f"আমার শেষ উত্তর ছিল: \"{last_message.response}\""
+                else:
+                    answer = f"আপনার শেষ প্রশ্ন: \"{last_message.query}\"\nআমার উত্তর: \"{last_message.response}\""
+            else:
+                if 'question' in query_data['cleaned_query'] or 'query' in query_data['cleaned_query'] or 'ask' in query_data['cleaned_query']:
+                    answer = f"Your last question was: \"{last_message.query}\""
+                elif 'answer' in query_data['cleaned_query'] or 'response' in query_data['cleaned_query'] or 'say' in query_data['cleaned_query']:
+                    answer = f"My last answer was: \"{last_message.response}\""
+                else:
+                    answer = f"Your last question: \"{last_message.query}\"\nMy answer: \"{last_message.response}\""
+        
+        return {
+            'answer': answer,
+            'query': query_data['original_query'],
+            'language': language,
+            'context_used': 0,
+            'sources': [],
+            'confidence': 1.0,
+            'memory_query': True
+        }
+    
+    def _add_chat_context(self, context: str, chat_history: List, language: str) -> str:
+        """Add chat history context to the document context"""
+        if not chat_history or len(chat_history) == 0:
+            return context
+        
+        # Get last 2 messages for context
+        recent_history = chat_history[-2:] if len(chat_history) >= 2 else chat_history
+        
+        if language == 'bn':
+            chat_context = "আগের কথোপকথন:\n"
+        else:
+            chat_context = "Previous conversation:\n"
+        
+        for msg in recent_history:
+            if language == 'bn':
+                chat_context += f"প্রশ্ন: {msg.query}\nউত্তর: {msg.response}\n\n"
+            else:
+                chat_context += f"Q: {msg.query}\nA: {msg.response}\n\n"
+        
+        return chat_context + "প্রাসঙ্গিক তথ্য:\n" + context if language == 'bn' else chat_context + "Relevant information:\n" + context

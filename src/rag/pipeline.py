@@ -46,6 +46,7 @@ class RAGPipeline:
             
             # Get context from chat history
             chat_context = self.memory_manager.get_context_for_query(session_id, query)
+            chat_history = self.memory_manager.get_session_history(session_id, limit=5)
             
             # Step 1: Process the query
             query_data = self.query_processor.process_query(query)
@@ -55,9 +56,9 @@ class RAGPipeline:
             retrieved_docs = self.retriever.retrieve_documents(query_data, k=k)
             self.logger.info(f"Retrieved {len(retrieved_docs)} relevant documents")
             
-            # Step 3: Generate response
-            if retrieved_docs:
-                response = self.generator.generate_response(query_data, retrieved_docs)
+            # Step 3: Generate response with chat history
+            if retrieved_docs or chat_history:
+                response = self.generator.generate_response(query_data, retrieved_docs, chat_history)
             else:
                 # Use fallback from memory manager
                 response = self.memory_manager.get_fallback_response(
