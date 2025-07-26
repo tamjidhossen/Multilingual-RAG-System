@@ -18,6 +18,17 @@ python build_index.py
 python test_rag.py
 ```
 
+### 3. Start the API Server & Chat Interface (Phase 5 & 6)
+```bash
+# Start the web chat interface
+python start_api.py
+
+# Access the system:
+# • Chat Interface: http://localhost:8000/
+# • API Docs: http://localhost:8000/docs
+# • Health Check: http://localhost:8000/health
+```
+
 ## System Features
 
 - Custom Content-Aware Chunking: Optimized chunk sizes per content type
@@ -175,10 +186,19 @@ The system uses Gemini 2.5 Pro for OCR which has strict rate limits:
 Multilingual-RAG-System/
 ├── .env.example              # Environment configuration template
 ├── .gitignore               # Git ignore rules
-├── requirements.txt         # Python dependencies (28 essential packages)
+├── requirements.txt         # Python dependencies 
 ├── README.md               # This file
 ├── CLEANUP_SUMMARY.md      # Project cleanup documentation
 ├── PROJECT_GUIDELINES.md   # Detailed project specifications
+│
+├── app.py                  # REST API server (Phase 5 & 6)
+├── start_api.py           # API server startup script
+├── build_index.py         # Knowledge base builder
+├── test_rag.py           # RAG system tester
+│
+├── static/               # Web chat interface
+│   └── index.html       # Modern responsive chat UI
+│
 ├── data/                   # PDF documents
 │   └── HSC26-Bangla1st-Paper.pdf
 ├── src/                    # Source code
@@ -204,13 +224,157 @@ This project is developed in incremental phases:
 
 - ✅ **Phase 1**: COMPLETED - Project setup and environment configuration
 - ✅ **Phase 2**: COMPLETED - OCR-based document processing with Gemini 2.5 Pro
-- 🚧 **Phase 3**: IN PROGRESS - Knowledge base construction with ChromaDB
-- ⏳ **Phase 4**: RAG core implementation with semantic search
-- ⏳ **Phase 5**: Memory management system
-- ⏳ **Phase 6**: API development (bonus)
+- ✅ **Phase 3**: COMPLETED - Knowledge base construction with ChromaDB
+- ✅ **Phase 4**: COMPLETED - RAG core implementation with semantic search
+- ✅ **Phase 5**: COMPLETED - Memory management system & API development
+- ✅ **Phase 6**: COMPLETED - Beautiful chat interface & REST API (bonus)
 - ⏳ **Phase 7**: Evaluation system (bonus)
 
 ## Usage Examples
+
+## Usage Examples
+
+## REST API & Chat Interface (Phase 5 & 6)
+
+### Web Chat Interface
+
+The system includes a modern, clean chat interface accessible at `http://localhost:8000/` after starting the API server.
+
+**Features:**
+- **Multilingual Support**: Ask questions in Bengali or English
+- **Real-time Responses**: Instant AI-powered answers with confidence scores
+- **Sample Questions**: Pre-loaded example queries for easy testing  
+- **System Statistics**: Live stats showing total queries and response times
+- **Modern UI**: Clean, responsive design following modern web standards
+- **Mobile Friendly**: Works seamlessly on mobile devices
+
+### REST API Endpoints
+
+#### 1. Query Endpoint
+```bash
+POST /query
+Content-Type: application/json
+
+{
+  "query": "অনুপমের ভাষায় সুপুরুষ কাকে বলা হয়েছে?",
+  "k": 5
+}
+```
+
+**Response:**
+```json
+{
+  "query": "অনুপমের ভাষায় সুপুরুষ কাকে বলা হয়েছে?",
+  "answer": "শুম্ভুনাথ",
+  "language": "bengali",
+  "confidence": 0.95,
+  "context_used": 3,
+  "sources": ["chunk_1", "chunk_2", "chunk_3"],
+  "response_time": 1.234,
+  "pipeline_info": {
+    "query_processed": true,
+    "documents_retrieved": 5,
+    "query_language": "bengali"
+  }
+}
+```
+
+#### 2. Chat Endpoint (Simplified)
+```bash
+POST /chat
+Content-Type: application/json
+
+{
+  "query": "What was Kalyani's actual age at marriage?",
+  "k": 5
+}
+```
+
+**Response:**
+```json
+{
+  "answer": "১৫ বছর (15 years)",
+  "language": "mixed",
+  "confidence": 0.92,
+  "response_time": 0.89,
+  "sources_count": 4
+}
+```
+
+#### 3. Health Check
+```bash
+GET /health
+```
+
+**Response:**
+```json
+{
+  "status": "healthy",
+  "message": "RAG Pipeline is ready",
+  "timestamp": "2025-01-26 15:30:45",
+  "version": "1.0.0"
+}
+```
+
+#### 4. System Statistics
+```bash
+GET /stats
+```
+
+**Response:**
+```json
+{
+  "total_queries": 127,
+  "avg_response_time": 1.234,
+  "pipeline_ready": true,
+  "last_query_time": "2025-01-26 15:29:12"
+}
+```
+
+### API Usage Examples
+
+#### Using cURL
+```bash
+# Test Bengali query
+curl -X POST "http://localhost:8000/query" \
+     -H "Content-Type: application/json" \
+     -d '{"query": "কাকে অনুপমের ভাগ্য দেবতা বলে উল্লেখ করা হয়েছে?"}'
+
+# Test English query  
+curl -X POST "http://localhost:8000/chat" \
+     -H "Content-Type: application/json" \
+     -d '{"query": "Who is referred to as সুপুরুষ in Anupams language?"}'
+```
+
+#### Using Python requests
+```python
+import requests
+
+response = requests.post(
+    "http://localhost:8000/query",
+    json={
+        "query": "বিয়ের সময় কল্যাণীর প্রকৃত বয়স কত ছিল?",
+        "k": 5
+    }
+)
+
+result = response.json()
+print(f"Answer: {result['answer']}")
+print(f"Confidence: {result['confidence']:.2%}")
+```
+
+### Sample Test Queries
+
+The system is optimized for these types of questions:
+
+**Bengali Queries:**
+- `অনুপমের ভাষায় সুপুরুষ কাকে বলা হয়েছে?` → `শুম্ভুনাথ`
+- `কাকে অনুপমের ভাগ্য দেবতা বলে উল্লেখ করা হয়েছে?` → `মামাকে`
+- `বিয়ের সময় কল্যাণীর প্রকৃত বয়স কত ছিল?` → `১৫ বছর`
+
+**English Queries:**
+- `Who is referred to as 'সুপুরুষ' in Anupam's language?` → `শুম্ভুনাথ`
+- `What was Kalyani's actual age at marriage?` → `15 years`
 
 ## Usage Examples
 

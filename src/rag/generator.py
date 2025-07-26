@@ -68,17 +68,10 @@ class ResponseGenerator:
         """Prepare context string from retrieved documents"""
         context_parts = []
         
-        for i, doc in enumerate(retrieved_docs[:5]):  # Use top 5 documents
-            text = doc['text']
-            metadata = doc['metadata']
-            
-            # Format context with metadata
-            context_part = f"প্রসঙ্গ {i+1}:\n{text}"
-            
-            if metadata.get('page_number'):
-                context_part += f"\n[পৃষ্ঠা: {metadata['page_number']}]"
-            
-            context_parts.append(context_part)
+        for doc in retrieved_docs[:5]:
+            text = doc['text'].strip()
+            if text:
+                context_parts.append(text)
         
         return "\n\n".join(context_parts)
     
@@ -95,39 +88,39 @@ class ResponseGenerator:
     
     def _build_bengali_prompt(self, query: str, context: str, query_type: str) -> str:
         """Build Bengali language prompt"""
-        base_prompt = f"""আপনি একজন বাংলা ভাষার বিশেষজ্ঞ সহায়ক। নিচের প্রসঙ্গের ভিত্তিতে প্রশ্নের উত্তর দিন।
+        base_prompt = f"""আপনি একজন বাংলা সাহিত্যের বিশেষজ্ঞ। নিম্নলিখিত তথ্যের ভিত্তিতে প্রশ্নের উত্তর দিন।
 
-প্রসঙ্গ:
+তথ্য:
 {context}
 
 প্রশ্ন: {query}
 
 নির্দেশনা:
-- প্রসঙ্গে যা আছে শুধু সেই তথ্যের ভিত্তিতে উত্তর দিন
+- শুধুমাত্র প্রদত্ত তথ্যের ভিত্তিতে উত্তর দিন
 - উত্তর সংক্ষিপ্ত এবং সঠিক হতে হবে
-- যদি প্রসঙ্গে উত্তর না থাকে, তাহলে স্পষ্টভাবে বলুন যে তথ্য পাওয়া যায়নি"""
+- তথ্য খুঁজে না পেলে স্পষ্টভাবে বলুন"""
         
         if query_type == 'mcq':
-            base_prompt += "\n- যদি এটি বহুনির্বাচনী প্রশ্ন হয়, তাহলে সঠিক উত্তর এবং ব্যাখ্যা দিন"
+            base_prompt += "\n- বহুনির্বাচনী প্রশ্নের ক্ষেত্রে সঠিক উত্তর দিন"
         
         return base_prompt + "\n\nউত্তর:"
     
     def _build_english_prompt(self, query: str, context: str, query_type: str) -> str:
         """Build English language prompt"""
-        base_prompt = f"""You are a helpful assistant specializing in Bengali literature. Answer the question based on the provided context.
+        base_prompt = f"""You are a helpful assistant specializing in Bengali literature. Answer the question based on the provided information.
 
-Context:
+Information:
 {context}
 
 Question: {query}
 
 Instructions:
-- Answer based only on the information provided in the context
+- Answer based only on the information provided
 - Keep the answer concise and accurate
-- If the answer is not in the context, clearly state that the information is not available"""
+- If the answer is not available, clearly state that the information is not found"""
         
         if query_type == 'mcq':
-            base_prompt += "\n- If this is a multiple choice question, provide the correct answer and explanation"
+            base_prompt += "\n- For multiple choice questions, provide the correct answer"
         
         return base_prompt + "\n\nAnswer:"
     
