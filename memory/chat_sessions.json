@@ -1,0 +1,26 @@
+{
+  "sessions": [
+    {
+      "session_id": "session_1753549498_5792",
+      "created_at": 1753549498.2646508,
+      "last_activity": 1753549498.2646508,
+      "messages": [],
+      "message_count": 0
+    },
+    {
+      "session_id": "session_1753549499_3229",
+      "created_at": 1753549499.5260518,
+      "last_activity": 1753549499.5260518,
+      "messages": [],
+      "message_count": 0
+    },
+    {
+      "session_id": "session_1753549501_5245",
+      "created_at": 1753549501.8360882,
+      "last_activity": 1753549501.8360882,
+      "messages": [],
+      "message_count": 0
+    }
+  ],
+  "last_updated": 1753549553.9964566
+}

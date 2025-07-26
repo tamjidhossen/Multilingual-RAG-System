@@ -1,12 +1,13 @@
 """
 RAG Pipeline - orchestrates the complete RAG workflow
 """
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from src.config.settings import get_settings
 from src.utils.logger import setup_logger
 from src.rag.query_processor import QueryProcessor
 from src.rag.retriever import DocumentRetriever
 from src.rag.generator import ResponseGenerator
+from src.memory.memory_manager import get_memory_manager
 
 
 class RAGPipeline:
@@ -20,22 +21,31 @@ class RAGPipeline:
         self.query_processor = QueryProcessor()
         self.retriever = DocumentRetriever()
         self.generator = ResponseGenerator()
+        self.memory_manager = get_memory_manager()
         
         self.logger.info("RAG Pipeline initialized successfully")
     
-    def process_query(self, query: str, k: int = 5) -> Dict[str, Any]:
+    def process_query(self, query: str, k: int = 5, session_id: Optional[str] = None) -> Dict[str, Any]:
         """
-        Process a complete RAG query
+        Process a complete RAG query with memory support
         
         Args:
             query: User query in Bengali or English
             k: Number of documents to retrieve
+            session_id: Optional session ID for memory management
             
         Returns:
             Complete response with answer and metadata
         """
         try:
             self.logger.info(f"Processing query: {query[:50]}...")
+            
+            # Create session if not provided
+            if session_id is None:
+                session_id = self.memory_manager.create_session()
+            
+            # Get context from chat history
+            chat_context = self.memory_manager.get_context_for_query(session_id, query)
             
             # Step 1: Process the query
             query_data = self.query_processor.process_query(query)
@@ -46,35 +56,53 @@ class RAGPipeline:
             self.logger.info(f"Retrieved {len(retrieved_docs)} relevant documents")
             
             # Step 3: Generate response
-            response = self.generator.generate_response(query_data, retrieved_docs)
+            if retrieved_docs:
+                response = self.generator.generate_response(query_data, retrieved_docs)
+            else:
+                # Use fallback from memory manager
+                response = self.memory_manager.get_fallback_response(
+                    query, query_data['language']
+                )
             
             # Add pipeline metadata
             response['pipeline_info'] = {
                 'query_processed': True,
                 'documents_retrieved': len(retrieved_docs),
                 'query_language': query_data['language'],
-                'query_type': query_data['query_type']
+                'query_type': query_data['query_type'],
+                'session_id': session_id,
+                'chat_context_used': bool(chat_context)
             }
+            
+            # Save to memory
+            self.memory_manager.add_message(
+                session_id=session_id,
+                query=query,
+                response=response['answer'],
+                language=query_data['language'],
+                confidence=response.get('confidence', 0.0),
+                sources=response.get('sources', [])
+            )
             
             self.logger.info("Query processed successfully")
             return response
             
         except Exception as e:
             self.logger.error(f"Error in RAG pipeline: {e}")
-            return {
-                'answer': self._get_error_response(query),
-                'query': query,
-                'language': 'unknown',
-                'context_used': 0,
-                'sources': [],
-                'confidence': 0.0,
-                'error': str(e),
-                'pipeline_info': {
-                    'query_processed': False,
-                    'documents_retrieved': 0,
-                    'error_occurred': True
-                }
+            
+            # Use fallback response
+            fallback_response = self.memory_manager.get_fallback_response(
+                query, 'unknown'
+            )
+            fallback_response['error'] = str(e)
+            fallback_response['pipeline_info'] = {
+                'query_processed': False,
+                'documents_retrieved': 0,
+                'error_occurred': True,
+                'session_id': session_id or 'unknown'
             }
+            
+            return fallback_response
     
     def _get_error_response(self, query: str) -> str:
         """Generate error response based on detected language"""
