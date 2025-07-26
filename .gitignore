@@ -1,0 +1,44 @@
+AI Engineer (Level-1) Assessment.txt
+PROJECT_GUIDELINES.md
+
+# PDF processing temporary files
+*.pdf
+temp_images/
+ocr_output/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite3
+vector_store/
+chroma_db/
+
+# Model cache
+.cache/
+models/
