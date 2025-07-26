@@ -2,9 +2,12 @@ AI Engineer (Level-1) Assessment.txt
 PROJECT_GUIDELINES.md
 
 # PDF processing temporary files
-# *.pdf
+# *.pdf (commented to keep the source PDF)
 temp_images/
 ocr_output/
+gemini_cache/
+processing_results/
+text_enhancement_cache/
 
 # Environment files
 .env
@@ -36,7 +39,6 @@ logs/
 # Database
 *.db
 *.sqlite3
-vector_store/
 chroma_db/
 
 # Model cache
