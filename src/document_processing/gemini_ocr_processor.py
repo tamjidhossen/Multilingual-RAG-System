@@ -191,7 +191,7 @@ class GeminiOCRProcessor:
             1. IDENTIFY MCQ SECTIONS: Find all multiple-choice questions with their options (ক, খ, গ, ঘ)
             2. IDENTIFY ANSWER TABLES: Find answer key tables that map question numbers to correct options
             3. CREATE MAPPINGS: Match each MCQ with its correct answer from the answer table
-            4. PRESERVE CONTENT: Keep all original Bengali text exactly as written
+            4. PRESERVE CONTENT: Keep all original Bengali text exactly as written, keep the explaination of mcq questions if provided
 
             Please analyze the text and return a JSON structure with:
             {
@@ -206,6 +206,7 @@ class GeminiOCRProcessor:
                             "ঘ": "option D text"
                         },
                         "correct_answer": "ক",
+                        "explanations(if provided): "",
                         "page_reference": "page number if available"
                     }
                 ],
@@ -264,17 +265,78 @@ class GeminiOCRProcessor:
             abbreviation_mappings = """
             UNIVERSITY ABBREVIATIONS:
             ঢাবি = ঢাকা বিশ্ববিদ্যালয় (University of Dhaka)
-            রাবি = রাজশাহী বিশ্ববিদ্যালয় (University of Rajshahi)  
+            রাবি = রাজশাহী বিশ্ববিদ্যালয় (University of Rajshahi)
+            বাকৃবি = বাংলাদেশ কৃষি বিশ্ববিদ্যালয় (Bangladesh Agricultural University)
+            বুয়েট = বাংলাদেশ প্রকৌশল ও প্রযুক্তি বিশ্ববিদ্যালয় (Bangladesh University of Engineering and Technology)
             চবি = চট্টগ্রাম বিশ্ববিদ্যালয় (University of Chittagong)
             জাবি = জাহাঙ্গীরনগর বিশ্ববিদ্যালয় (Jahangirnagar University)
+            ইবি = ইসলামী বিশ্ববিদ্যালয়, বাংলাদেশ (Islamic University, Bangladesh)
+            শাবিপ্রবি = শাহজালাল বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় (Shahjalal University of Science and Technology)
+            খুবি = খুলনা বিশ্ববিদ্যালয় (Khulna University)
+            জাবি = জাতীয় বিশ্ববিদ্যালয়, বাংলাদেশ (National University, Bangladesh)
+            বাউবি = বাংলাদেশ উন্মুক্ত বিশ্ববিদ্যালয় (Bangladesh Open University)
+            বিএসএমএমইউ = বঙ্গবন্ধু শেখ মুজিব মেডিকেল বিশ্ববিদ্যালয় (Bangabandhu Sheikh Mujib Medical University)
+            হাবিপ্রবি = হাজী মোহাম্মদ দানেশ বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় (Hajee Mohammad Danesh Science & Technology University)
+            মাভাবিপ্রবি = মাওলানা ভাসানী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় (Mawlana Bhashani Science and Technology University)
+            পবিপ্রবি = পটুয়াখালী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় (Patuakhali Science and Technology University)
+            শেকৃবি = শেরেবাংলা কৃষি বিশ্ববিদ্যালয় (Sher-e-Bangla Agricultural University)
+            চুয়েট = চট্টগ্রাম প্রকৌশল ও প্রযুক্তি বিশ্ববিদ্যালয় (Chittagong University of Engineering & Technology)
+            রুয়েট = রাজশাহী প্রকৌশল ও প্রযুক্তি বিশ্ববিদ্যালয় (Rajshahi University of Engineering & Technology)
+            কুয়েট = খুলনা প্রকৌশল ও প্রযুক্তি বিশ্ববিদ্যালয় (Khulna University of Engineering & Technology)
+            ডুয়েট = ঢাকা প্রকৌশল ও প্রযুক্তি বিশ্ববিদ্যালয় (Dhaka University of Engineering & Technology)
+            নোবিপ্রবি = নোয়াখালী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় (Noakhali Science and Technology University)
+            জবি = জগন্নাথ বিশ্ববিদ্যালয় (Jagannath University)
             কুবি = কুমিল্লা বিশ্ববিদ্যালয় (Comilla University)
-            বুয়েট = বাংলাদেশ প্রকৌশল ও প্রযুক্তি বিশ্ববিদ্যালয় (BUET)
+            জাককানইবি = জাতীয় কবি কাজী নজরুল ইসলাম বিশ্ববিদ্যালয় (Jatiya Kabi Kazi Nazrul Islam University)
+            চভেএবি = চট্টগ্রাম ভেটেরিনারি ও এনিম্যাল সাইন্সেস বিশ্ববিদ্যালয় (Chittagong Veterinary and Animal Sciences University)
+            সিকৃবি = সিলেট কৃষি বিশ্ববিদ্যালয় (Sylhet Agricultural University)
+            যবিপ্রবি = যশোর বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় (Jashore University of Science and Technology)
+            পাবিপ্রবি = পাবনা বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় (Pabna University of Science and Technology)
+            বেরোবি = বেগম রোকেয়া বিশ্ববিদ্যালয়, রংপুর (Begum Rokeya University, Rangpur)
+            বিইউপি = বাংলাদেশ ইউনিভার্সিটি অব প্রফেশনালস (Bangladesh University of Professionals)
+            বশেমুরবিপ্রবি = বঙ্গবন্ধু শেখ মুজিবুর রহমান বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় (Bangabandhu Sheikh Mujibur Rahman Science and Technology University)
+            বুটেক্স = বাংলাদেশ টেক্সটাইল বিশ্ববিদ্যালয় (Bangladesh University of Textiles)
+            ববি = বরিশাল বিশ্ববিদ্যালয় (University of Barishal)
+            রাবিপ্রবি = রাঙ্গামাটি বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় (Rangamati Science and Technology University)
+            বামেবি = বাংলাদেশ মেরিন বিশ্ববিদ্যালয় (Bangladesh Maritime University)
+            ইআবি = ইসলামী আরবী বিশ্ববিদ্যালয় (Islamic Arabic University)
+            চমেবি = চট্টগ্রাম মেডিকেল বিশ্ববিদ্যালয় (Chittagong Medical University)
+            রামেবি = রাজশাহী মেডিকেল বিশ্ববিদ্যালয় (Rajshahi Medical University)
+            রবি = রবীন্দ্র বিশ্ববিদ্যালয়, বাংলাদেশ (Rabindra University, Bangladesh)
+            বশেমুরডিইউ = বঙ্গবন্ধু শেখ মুজিবুর রহমান ডিজিটাল বিশ্ববিদ্যালয় (Bangabandhu Sheikh Mujibur Rahman Digital University)
+            খুকৃবি = খুলনা কৃষি বিশ্ববিদ্যালয় (Khulna Agricultural University)
+            জাবিপ্রবি = জামালপুর বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় (Jamalpur Science and Technology University)
+            সিমেবি = সিলেট মেডিকেল বিশ্ববিদ্যালয় (Sylhet Medical University)
+            এএইউবি = এভিয়েশন অ্যান্ড অ্যারোস্পেস ইউনিভার্সিটি, বাংলাদেশ (Aviation And Aerospace University, Bangladesh)
+            চাবিপ্রবি = চাঁদপুর বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় (Chandpur Science and Technology University)
+            কিবি = কিশোরগঞ্জ বিশ্ববিদ্যালয় (Kishoreganj University)
+            হাকৃবি = হবিগঞ্জ কৃষি বিশ্ববিদ্যালয় (Habiganj Agricultural University)
+            খুমেবি = খুলনা মেডিকেল বিশ্ববিদ্যালয় (Khulna Medical University)
+            কুকৃবি = কুড়িগ্রাম কৃষি বিশ্ববিদ্যালয় (Kurigram Agricultural University)
+            সাবিপ্রবি = সুনামগঞ্জ বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় (Sunamganj Science and Technology University)
+            পিপিএসটিইউ = পিরোজপুর বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় (Pirojpur Science & Technology University)
+            নবি = নওগাঁ বিশ্ববিদ্যালয় (Naogaon University)
+            মেবি = মেহেরপুর বিশ্ববিদ্যালয় (Meherpur University)
+            ঠাবি = ঠাকুরগাঁও বিশ্ববিদ্যালয় (Thakurgaon University)
+            নেবি = নেত্রকোণা বিশ্ববিদ্যালয় (Netrokona University)
+            ববিপ্রবি = বগুড়া বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় (Bogura Science and Technology University)
+            লবিপ্রবি = লক্ষ্মীপুর বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় (Lakshmipur Science and Technology University)
+            সাউস্ট = সাতক্ষীরা বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় (Satkhira University of Science and Technology)
+            নাবিপ্রবি = নারায়ণগঞ্জ বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় (Narayanganj Science and Technology University)
+            ঢাকেবি = ঢাকা কেন্দ্রীয় বিশ্ববিদ্যালয় (Dhaka Central University)
             
             BOARD ABBREVIATIONS:
             ঢা. বো. = ঢাকা শিক্ষা বোর্ড (Dhaka Education Board)
             রাজশাহী বো. = রাজশাহী শিক্ষা বোর্ড (Rajshahi Education Board)
-            চট্টগ্রাম বো. = চট্টগ্রাম শিক্ষা বোর্ড (Chittagong Education Board)
+            কুমিল্লা বো. = কুমিল্লা শিক্ষা বোর্ড (Comilla (Cumilla) Education Board)
             যশোর বো. = যশোর শিক্ষা বোর্ড (Jessore Education Board)
+            চট্টগ্রাম বো. = চট্টগ্রাম শিক্ষা বোর্ড (Chittagong Education Board)
+            বরিশাল বো. = বরিশাল শিক্ষা বোর্ড (Barisal Education Board)
+            সিলেট বো. = সিলেট শিক্ষা বোর্ড (Sylhet Education Board)
+            দিনাজপুর বো. = দিনাজপুর শিক্ষা বোর্ড (Dinajpur Education Board)
+            ময়মনসিংহ বো. = ময়মনসিংহ শিক্ষা বোর্ড (Mymensingh Education Board)
+            টেকনিক্যাল বো. = টেকনিক্যাল শিক্ষা বোর্ড (Technical Education Board (Bangladesh))
+            মাদ্রাসা বো. = মাদ্রাসা শিক্ষা বোর্ড (Madrasa Education Board)
             """
             
             prompt = f"""Please expand any Bengali university and board abbreviations found in this content using these mappings:
