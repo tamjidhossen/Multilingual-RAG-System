@@ -9,11 +9,6 @@ Pillow>=10.4.0   # Image processing support
 # Vector Database - ChromaDB
 chromadb>=1.0.15
 
-# LangChain for RAG pipeline
-langchain>=0.3.27
-langchain-google-genai>=2.1.8
-langsmith>=0.4.8
-
 # Data Processing & ML
 numpy>=1.26.4
 pandas>=2.2.6

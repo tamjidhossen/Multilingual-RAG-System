@@ -58,15 +58,6 @@ class Settings:
         self.LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
         self.LOG_FILE: Path = self.LOGS_DIR / os.getenv("LOG_FILE", "rag_system.log")
         
-        # LangSmith Configuration
-        self.LANGCHAIN_TRACING_V2: bool = (
-            os.getenv("LANGCHAIN_TRACING_V2", "false").lower() == "true"
-        )
-        self.LANGCHAIN_API_KEY: str = os.getenv("LANGCHAIN_API_KEY", "")
-        self.LANGCHAIN_PROJECT: str = os.getenv(
-            "LANGCHAIN_PROJECT", "multilingual-rag-system"
-        )
-        
         # Development Configuration
         self.DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
         self.ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
