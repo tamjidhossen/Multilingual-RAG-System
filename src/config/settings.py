@@ -27,18 +27,18 @@ class Settings:
         self.LOGS_DIR.mkdir(exist_ok=True)
         
         # Gemini API Configuration
-        self.GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "")
-        self.GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
-        self.EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "gemini-embedding-001")
+        self.google_api_key: str = os.getenv("GOOGLE_API_KEY", "")
+        self.gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+        self.embedding_model: str = os.getenv("EMBEDDING_MODEL", "gemini-embedding-001")
         
         # ChromaDB Configuration
-        self.CHROMA_DB_PATH: Path = Path(os.getenv("CHROMA_DB_PATH", "./data/chroma_db"))
-        self.COLLECTION_NAME: str = os.getenv("COLLECTION_NAME", "hsc_bangla_documents")
+        self.chroma_db_path: str = os.getenv("CHROMA_DB_PATH", "./data/chroma_db")
+        self.collection_name: str = os.getenv("COLLECTION_NAME", "hsc_bangla_documents")
         
         # Embedding Configuration
-        self.EMBEDDING_DIMENSION: int = int(os.getenv("EMBEDDING_DIMENSION", "768"))
-        self.CHUNK_SIZE: int = int(os.getenv("CHUNK_SIZE", "512"))
-        self.CHUNK_OVERLAP: int = int(os.getenv("CHUNK_OVERLAP", "50"))
+        self.embedding_dimension: int = int(os.getenv("EMBEDDING_DIMENSION", "768"))
+        self.chunk_size: int = int(os.getenv("CHUNK_SIZE", "512"))
+        self.chunk_overlap: int = int(os.getenv("CHUNK_OVERLAP", "50"))
         
         # PDF Processing Configuration
         self.PDF_PATH: Path = Path(os.getenv("PDF_PATH", "./Data/HSC26-Bangla1st-Paper.pdf"))
@@ -75,7 +75,7 @@ class Settings:
         """Validate required configuration settings"""
         missing_configs = []
         
-        if not self.GOOGLE_API_KEY:
+        if not self.google_api_key:
             missing_configs.append("GOOGLE_API_KEY")
         
         if not self.PDF_PATH.exists():
@@ -91,16 +91,16 @@ class Settings:
     def get_chroma_config(self) -> dict:
         """Get ChromaDB configuration"""
         return {
-            "path": str(self.CHROMA_DB_PATH),
-            "collection_name": self.COLLECTION_NAME,
+            "path": str(self.chroma_db_path),
+            "collection_name": self.collection_name,
         }
     
     def get_embedding_config(self) -> dict:
         """Get embedding configuration"""
         return {
-            "model": self.EMBEDDING_MODEL,
-            "dimension": self.EMBEDDING_DIMENSION,
-            "api_key": self.GOOGLE_API_KEY,
+            "model": self.embedding_model,
+            "dimension": self.embedding_dimension,
+            "api_key": self.google_api_key,
         }
     
     def __str__(self) -> str:
@@ -109,9 +109,21 @@ class Settings:
         Settings Configuration:
         - Environment: {self.ENVIRONMENT}
         - Debug: {self.DEBUG}
-        - Gemini Model: {self.GEMINI_MODEL}
-        - Embedding Model: {self.EMBEDDING_MODEL}
-        - ChromaDB Path: {self.CHROMA_DB_PATH}
-        - Chunk Size: {self.CHUNK_SIZE}
+        - Gemini Model: {self.gemini_model}
+        - Embedding Model: {self.embedding_model}
+        - ChromaDB Path: {self.chroma_db_path}
+        - Chunk Size: {self.chunk_size}
         - Log Level: {self.LOG_LEVEL}
         """
+
+
+# Global settings instance
+_settings = None
+
+
+def get_settings() -> Settings:
+    """Get global settings instance (singleton pattern)"""
+    global _settings
+    if _settings is None:
+        _settings = Settings()
+    return _settings

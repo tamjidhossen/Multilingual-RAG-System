@@ -1,0 +1,125 @@
+"""
+RAG Pipeline - orchestrates the complete RAG workflow
+"""
+from typing import Dict, Any
+from src.config.settings import get_settings
+from src.utils.logger import setup_logger
+from src.rag.query_processor import QueryProcessor
+from src.rag.retriever import DocumentRetriever
+from src.rag.generator import ResponseGenerator
+
+
+class RAGPipeline:
+    """Main RAG pipeline that orchestrates query processing, retrieval, and generation"""
+    
+    def __init__(self):
+        self.settings = get_settings()
+        self.logger = setup_logger(__name__)
+        
+        # Initialize components
+        self.query_processor = QueryProcessor()
+        self.retriever = DocumentRetriever()
+        self.generator = ResponseGenerator()
+        
+        self.logger.info("RAG Pipeline initialized successfully")
+    
+    def process_query(self, query: str, k: int = 5) -> Dict[str, Any]:
+        """
+        Process a complete RAG query
+        
+        Args:
+            query: User query in Bengali or English
+            k: Number of documents to retrieve
+            
+        Returns:
+            Complete response with answer and metadata
+        """
+        try:
+            self.logger.info(f"Processing query: {query[:50]}...")
+            
+            # Step 1: Process the query
+            query_data = self.query_processor.process_query(query)
+            self.logger.info(f"Query language: {query_data['language']}, type: {query_data['query_type']}")
+            
+            # Step 2: Retrieve relevant documents
+            retrieved_docs = self.retriever.retrieve_documents(query_data, k=k)
+            self.logger.info(f"Retrieved {len(retrieved_docs)} relevant documents")
+            
+            # Step 3: Generate response
+            response = self.generator.generate_response(query_data, retrieved_docs)
+            
+            # Add pipeline metadata
+            response['pipeline_info'] = {
+                'query_processed': True,
+                'documents_retrieved': len(retrieved_docs),
+                'query_language': query_data['language'],
+                'query_type': query_data['query_type']
+            }
+            
+            self.logger.info("Query processed successfully")
+            return response
+            
+        except Exception as e:
+            self.logger.error(f"Error in RAG pipeline: {e}")
+            return {
+                'answer': self._get_error_response(query),
+                'query': query,
+                'language': 'unknown',
+                'context_used': 0,
+                'sources': [],
+                'confidence': 0.0,
+                'error': str(e),
+                'pipeline_info': {
+                    'query_processed': False,
+                    'documents_retrieved': 0,
+                    'error_occurred': True
+                }
+            }
+    
+    def _get_error_response(self, query: str) -> str:
+        """Generate error response based on detected language"""
+        # Simple language detection for error message
+        bengali_chars = len([c for c in query if '\u0980' <= c <= '\u09FF'])
+        total_chars = len([c for c in query if not c.isspace()])
+        
+        if total_chars > 0 and bengali_chars / total_chars > 0.3:
+            return "দুঃখিত, আপনার প্রশ্ন প্রক্রিয়া করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।"
+        else:
+            return "Sorry, there was an error processing your question. Please try again."
+
+
+def main():
+    """Test the RAG pipeline with sample queries"""
+    pipeline = RAGPipeline()
+    
+    # Test queries
+    test_queries = [
+        "অনুপমের বাবা কী করে জীবিকা নির্বাহ করতেন?",
+        "কাকে অনুপমের ভাগ্য দেবতা বলে উল্লেখ করা হয়েছে?",
+        "Who is referred to as 'সুপুরুষ' in Anupam's language?",
+        "What was Kalyani's actual age at the time of marriage?"
+    ]
+    
+    print("Testing RAG Pipeline...")
+    print("=" * 50)
+    
+    for i, query in enumerate(test_queries, 1):
+        print(f"\nTest {i}: {query}")
+        print("-" * 30)
+        
+        try:
+            response = pipeline.process_query(query)
+            
+            print(f"Language: {response['language']}")
+            print(f"Answer: {response['answer']}")
+            print(f"Confidence: {response['confidence']:.2f}")
+            print(f"Sources: {len(response['sources'])}")
+            
+        except Exception as e:
+            print(f"Error: {e}")
+        
+        print()
+
+
+if __name__ == "__main__":
+    main()

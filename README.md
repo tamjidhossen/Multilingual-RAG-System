@@ -1,6 +1,71 @@
 # Multilingual RAG System
 
-A comprehensive Retrieval-Augmented Generation (RAG) system capable of processing Bengali HSC textbook content using advanced OCR technology and responding to queries in both Bengali and English languages.
+# Multilingual RAG System
+
+A production-ready Multilingual Retrieval-Augmented Generation (RAG) system for Bengali HSC textbook content with custom content-aware chunking and rate-limited API usage.
+
+## Quick Start
+
+### 1. One-Time Setup (Build Knowledge Base)
+```bash
+# This may take 10-15 minutes due to API rate limiting
+python build_index.py
+```
+
+### 2. Test the System
+```bash
+# Test with sample queries
+python test_rag.py
+```
+
+## System Features
+
+- Custom Content-Aware Chunking: Optimized chunk sizes per content type
+  - MCQ: 800 chars (individual questions)
+  - Creative: 1500 chars (context + sub-questions)
+  - Table: 1200 chars (structured data)
+  - General: 1000 chars (standard text)
+
+- Rate-Limited API Usage: Prevents quota exhaustion with smart delays
+- Automatic Retry Logic: Handles temporary API issues
+- Multilingual Support: Bengali and English queries
+- Content-Type Aware Retrieval: Matches query types to appropriate content
+
+## Architecture
+
+```
+src/
+├── config/settings.py          # Configuration management
+├── knowledge_base/             # Phase 3: Knowledge Base Construction
+│   ├── smart_chunker.py       # Content-aware chunking
+│   ├── embedding_service.py   # Rate-limited embedding generation
+│   ├── vector_store.py        # ChromaDB vector storage
+│   └── indexer.py            # Orchestrates indexing process
+├── rag/                       # Phase 4: RAG Core Implementation
+│   ├── query_processor.py    # Query analysis and embedding
+│   ├── retriever.py          # Document retrieval
+│   ├── generator.py          # Response generation
+│   └── pipeline.py           # Complete RAG workflow
+└── utils/logger.py           # Logging utilities
+```
+
+## Content Processing
+
+The system processes separated content files:
+- `mcq_content.txt` → Individual MCQ questions
+- `creative_questions.txt` → Creative question sets (separated by `---`)
+- `table_content.txt` → Table data (word definitions)
+- `rest_content.txt` → General content
+
+## Technical Details
+
+- **Framework**: Custom implementation (no LangChain dependency)
+- **Embedding Model**: `gemini-embedding-001` (3072 dimensions)
+- **LLM Model**: `gemini-2.5-flash`
+- **Vector Store**: ChromaDB with persistent storage
+- **Chunking Algorithm**: Custom content-type aware splitting
+- **Rate Limiting**: 2s delays + exponential backoff
+- **Retry Logic**: 3 attempts per failed request
 
 ## Project Overview
 
