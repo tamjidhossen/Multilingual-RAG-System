@@ -1,53 +1,182 @@
-# Session Management API Documentation
+# Session Management API Reference
 
 ## Overview
-The Multilingual RAG System now includes comprehensive session management capabilities as part of Phase 5 implementation. This allows for persistent conversation history, context retention, and user-specific memory management.
+Session management enables persistent conversation tracking and memory-aware interactions in the Multilingual RAG System.
 
-## Session Management Endpoints
+## API Endpoints
 
-### 1. Create New Session
-**POST** `/session/create`
-
-Creates a new chat session with unique session ID.
+### Create Session
+```bash
+POST /session/create
+```
 
 **Response:**
 ```json
 {
-    "session_id": "sess_1234567890abcdef",
-    "message": "Session created successfully"
+    "session_id": "session_1753550133_696",
+    "created": true
 }
 ```
 
-### 2. Get Session Statistics
-**GET** `/session/{session_id}/stats`
+### Query with Session
+```bash
+POST /query
+```
 
-Retrieves statistics for a specific session.
+**Request:**
+```json
+{
+    "query": "অনুপমের বাবা কী করতেন?",
+    "session_id": "session_1753550133_696",
+    "k": 5
+}
+```
 
 **Response:**
 ```json
 {
-    "session_id": "sess_1234567890abcdef",
+    "query": "অনুপমের বাবা কী করতেন?",
+    "answer": "অনুপমের বাবা ওকালতি করতেন।",
+    "language": "bn",
+    "confidence": 0.85,
+    "context_used": 3,
+    "sources": ["doc_1", "doc_2"],
+    "response_time": 2.34,
+    "session_id": "session_1753550133_696",
+    "pipeline_info": {
+        "query_processed": true,
+        "documents_retrieved": 3,
+        "query_language": "bn",
+        "query_type": "factual",
+        "session_id": "session_1753550133_696",
+        "chat_context_used": false
+    }
+}
+```
+
+### Memory Query Example
+```bash
+POST /query
+```
+
+**Request:**
+```json
+{
+    "query": "আমার শেষ প্রশ্ন কী ছিল?",
+    "session_id": "session_1753550133_696"
+}
+```
+
+**Response:**
+```json
+{
+    "query": "আমার শেষ প্রশ্ন কী ছিল?",
+    "answer": "আপনার শেষ প্রশ্ন ছিল: \"অনুপমের বাবা কী করতেন?\"",
+    "language": "bn",
+    "confidence": 1.0,
+    "context_used": 0,
+    "sources": [],
+    "memory_query": true,
+    "session_id": "session_1753550133_696"
+}
+```
+
+### Get Session Statistics
+```bash
+GET /session/{session_id}/stats
+```
+
+**Response:**
+```json
+{
+    "session_id": "session_1753550133_696",
     "message_count": 5,
-    "avg_response_time": 2.34,
-    "languages_used": ["bengali", "english"],
-    "created_at": "2024-01-01T10:00:00Z",
-    "last_activity": "2024-01-01T10:30:00Z"
+    "languages_used": ["bn", "en"],
+    "avg_confidence": 0.87,
+    "created_at": 1753550133.264,
+    "last_activity": 1753550200.123,
+    "duration": 66.859
 }
 ```
 
-### 3. Get Session History
-**GET** `/session/{session_id}/history`
-
-Retrieves complete chat history for a session.
+### Get Session History
+```bash
+GET /session/{session_id}/history?limit=10
+```
 
 **Response:**
 ```json
 {
-    "session_id": "sess_1234567890abcdef",
+    "session_id": "session_1753550133_696",
     "messages": [
         {
-            "id": "msg_001",
-            "user_query": "বাংলা ব্যাকরণ কি?",
+            "timestamp": 1753550140.123,
+            "query": "অনুপমের বাবা কী করতেন?",
+            "response": "অনুপমের বাবা ওকালতি করতেন।",
+            "language": "bn",
+            "confidence": 0.85,
+            "sources_used": ["doc_1", "doc_2"]
+        }
+    ],
+    "total_messages": 1
+}
+```
+
+## Memory Query Patterns
+
+### Bengali Memory Queries
+- `আমার শেষ প্রশ্ন কী ছিল?` - "What was my last question?"
+- `আগের উত্তর কী ছিল?` - "What was the previous answer?"
+- `আমার পূর্বের প্রশ্ন` - "My previous question"
+
+### English Memory Queries
+- `what was my last query?`
+- `my previous question`
+- `what did you say before?`
+- `tell me about my last question`
+
+## Usage Examples
+
+### Python Client
+```python
+import requests
+
+# Create session
+response = requests.post("http://localhost:8000/session/create")
+session_id = response.json()["session_id"]
+
+# Query with memory
+data = {
+    "query": "অনুপমের বাবা কী করতেন?",
+    "session_id": session_id
+}
+response = requests.post("http://localhost:8000/query", json=data)
+
+# Memory query
+memory_data = {
+    "query": "আমার শেষ প্রশ্ন কী ছিল?",
+    "session_id": session_id
+}
+memory_response = requests.post("http://localhost:8000/query", json=memory_data)
+```
+
+### curl Examples
+```bash
+# Create session
+SESSION_ID=$(curl -s -X POST "http://localhost:8000/session/create" | jq -r '.session_id')
+
+# Regular query
+curl -X POST "http://localhost:8000/query" \
+  -H "Content-Type: application/json" \
+  -d "{\"query\": \"অনুপমের বাবা কী করতেন?\", \"session_id\": \"$SESSION_ID\"}"
+
+# Memory query
+curl -X POST "http://localhost:8000/query" \
+  -H "Content-Type: application/json" \
+  -d "{\"query\": \"what was my last query?\", \"session_id\": \"$SESSION_ID\"}"
+```
+
+For detailed memory system documentation, see [MEMORY_SYSTEM.md](MEMORY_SYSTEM.md).
             "assistant_response": "বাংলা ব্যাকরণ হলো...",
             "language": "bengali",
             "timestamp": "2024-01-01T10:15:00Z"

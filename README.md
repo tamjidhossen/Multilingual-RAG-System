@@ -1,126 +1,415 @@
 # Multilingual RAG System
 
-# Multilingual RAG System
+A production-ready Multilingual Retrieval-Augmented Generation (RAG) system supporting Bengali and English with advanced memory management, conversation history, and meta-query capabilities.
 
-A production-ready Multilingual Retrieval-Augmented Generation (RAG) system for Bengali HSC textbook content with custom content-aware chunking and rate-limited API usage.
+## 🚀 Features
 
-## Quick Start
+### Core Functionality
+- **Multilingual Support**: Seamless Bengali and English query processing
+- **Memory Management**: Persistent conversation history with session-based tracking
+- **Meta-Query Support**: Ask about previous conversations ("what was my last query?")
+- **Smart Content Chunking**: Content-aware chunking optimized for different document types
+- **Real-time Chat**: Web-based chat interface with memory persistence
 
-### 1. One-Time Setup (Build Knowledge Base)
+### Memory & Conversation Features
+- **Session Management**: Each conversation maintains its own context
+- **Memory Queries**: Ask about previous questions and answers in both languages
+  - Bengali: "আমার শেষ প্রশ্ন কী ছিল?", "আগের উত্তরটা কী ছিল?"
+  - English: "what was my last query?", "tell me about my previous question"
+- **Context Integration**: Previous conversations inform new responses
+- **Persistent Storage**: Chat history saved to disk with automatic cleanup
+
+## 🛠️ Quick Start
+
+### Prerequisites
+- Python 3.8+
+- Google Gemini API key
+- Virtual environment (recommended)
+
+### 1. Environment Setup
+```bash
+# Clone and setup virtual environment
+python -m venv .venv
+source .venv/bin/activate  # Linux/Mac
+# or
+.venv\Scripts\activate     # Windows
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Setup environment variables
+cp .env.example .env
+# Edit .env with your Google API key
+```
+
+### 2. Build Knowledge Base (One-time)
 ```bash
 # This may take 10-15 minutes due to API rate limiting
 python build_index.py
 ```
 
-### 2. Test the System
+### 3. Test the System
 ```bash
-# Test with sample queries
+# Test basic RAG functionality
 python test_rag.py
+
+# Test memory functionality
+python test_memory.py
+
+# Test session management
+python test_sessions.py
 ```
 
-### 3. Start the API Server & Chat Interface (Phase 5 & 6)
+### 4. Start the Web Interface
 ```bash
-# Start the web chat interface
+# Method 1: Using the start script
 python start_api.py
+
+# Method 2: Direct FastAPI
+python app.py
 
 # Access the system:
 # • Chat Interface: http://localhost:8000/
-# • API Docs: http://localhost:8000/docs
+# • API Documentation: http://localhost:8000/docs
 # • Health Check: http://localhost:8000/health
+# • System Stats: http://localhost:8000/stats
 ```
 
-## System Features
-
-- Custom Content-Aware Chunking: Optimized chunk sizes per content type
-  - MCQ: 800 chars (individual questions)
-  - Creative: 1500 chars (context + sub-questions)
-  - Table: 1200 chars (structured data)
-  - General: 1000 chars (standard text)
-
-- Rate-Limited API Usage: Prevents quota exhaustion with smart delays
-- Automatic Retry Logic: Handles temporary API issues
-- Multilingual Support: Bengali and English queries
-- Content-Type Aware Retrieval: Matches query types to appropriate content
-
-## Architecture
+## 🏗️ Architecture
 
 ```
 src/
-├── config/settings.py          # Configuration management
-├── knowledge_base/             # Phase 3: Knowledge Base Construction
+├── config/
+│   ├── settings.py             # Configuration management
+│   └── __init__.py
+├── document_processing/
+│   ├── gemini_ocr_processor.py # OCR and text extraction
+│   └── __init__.py
+├── knowledge_base/
+│   ├── embedding_service.py    # Text embeddings generation
+│   ├── indexer.py             # Document indexing
 │   ├── smart_chunker.py       # Content-aware chunking
-│   ├── embedding_service.py   # Rate-limited embedding generation
 │   ├── vector_store.py        # ChromaDB vector storage
-│   └── indexer.py            # Orchestrates indexing process
-├── rag/                       # Phase 4: RAG Core Implementation
-│   ├── query_processor.py    # Query analysis and embedding
-│   ├── retriever.py          # Document retrieval
-│   ├── generator.py          # Response generation
-│   └── pipeline.py           # Complete RAG workflow
-└── utils/logger.py           # Logging utilities
+│   └── __init__.py
+├── memory/                     # 🧠 Memory Management
+│   ├── memory_manager.py      # Session and conversation tracking
+│   └── __init__.py
+├── rag/
+│   ├── generator.py           # Response generation with memory
+│   ├── pipeline.py            # Main RAG orchestration
+│   ├── query_processor.py     # Query analysis and language detection
+│   ├── retriever.py           # Document retrieval
+│   └── __init__.py
+├── utils/
+│   ├── logger.py              # Logging utilities
+│   └── __init__.py
+└── __init__.py
+
+memory/
+├── chat_sessions.json         # Persistent conversation storage
+└── long_term_stats.json      # System analytics
+
+data/
+├── HSC26-Bangla1st-Paper.pdf # Source document
+└── chroma_db/                # Vector database
+
+static/
+└── index.html                 # Web chat interface
 ```
 
-## Content Processing
+## 💡 Usage Examples
 
-The system processes separated content files:
-- `mcq_content.txt` → Individual MCQ questions
-- `creative_questions.txt` → Creative question sets (separated by `---`)
-- `table_content.txt` → Table data (word definitions)
-- `rest_content.txt` → General content
+### Basic Query Processing
+```python
+from src.rag.pipeline import RAGPipeline
 
-## Technical Details
+pipeline = RAGPipeline()
 
-- **Framework**: Custom implementation (no LangChain dependency)
-- **Embedding Model**: `gemini-embedding-001` (3072 dimensions)
-- **LLM Model**: `gemini-2.5-flash`
-- **Vector Store**: ChromaDB with persistent storage
-- **Chunking Algorithm**: Custom content-type aware splitting
-- **Rate Limiting**: 2s delays + exponential backoff
-- **Retry Logic**: 3 attempts per failed request
+# Regular queries
+response = pipeline.process_query("অনুপমের বাবা কী করতেন?")
+print(response['answer'])  # "ওকালতি"
 
-## Project Overview
+# English queries
+response = pipeline.process_query("What did Anupam's father do?")
+print(response['answer'])
+```
 
-This system processes the HSC26 Bangla 1st paper PDF document using **Gemini 2.5 Pro OCR** to create a knowledge base that can answer questions accurately using semantic search and generative AI. The system uses Google Gemini models for OCR, embeddings, and text generation, with support for multilingual query processing.
+### Memory-Enhanced Conversations
+```python
+from src.rag.pipeline import RAGPipeline
+from src.memory.memory_manager import get_memory_manager
 
-## ✨ Key Features
+pipeline = RAGPipeline()
+memory_manager = get_memory_manager()
 
-- **🔍 Advanced OCR**: Uses Gemini 2.5 Pro for high-quality Bengali text extraction
-- **🌐 Multilingual Support**: Handles queries in both Bengali and English
-- **📚 Intelligent Processing**: Extracts and maps MCQs with answer keys automatically
-- **🎯 Semantic Search**: Uses Gemini embeddings for accurate document retrieval
-- **🧠 Memory Management**: Maintains conversation history and document context
-- **📊 Structured Content**: Processes MCQs, glossary, essays, and exam references
-- **⚡ Rate-Limited**: Respects API limits with intelligent request management
-- **🏗️ Clean Architecture**: Modular, maintainable codebase following best practices
+# Create a session
+session_id = memory_manager.create_session()
 
-## Quick Start
+# First query
+response1 = pipeline.process_query(
+    "অনুপমের বাবা কী করতেন?", 
+    session_id=session_id
+)
 
-### Prerequisites
+# Memory query
+response2 = pipeline.process_query(
+    "আমার শেষ প্রশ্ন কী ছিল?", 
+    session_id=session_id
+)
+print(response2['answer'])  # "আপনার শেষ প্রশ্ন ছিল: 'অনুপমের বাবা কী করতেন?'"
+```
 
-- Python 3.10 or higher
-- Google Gemini API key (with 2.5 Pro access)
-- Bengali PDF document (HSC26-Bangla1st-Paper.pdf)
-- Virtual environment (recommended)
+### API Usage
+```bash
+# Create a session
+curl -X POST "http://localhost:8000/session/create"
 
-### Installation
+# Send query with session
+curl -X POST "http://localhost:8000/query" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "অনুপমের বাবা কী করতেন?",
+    "session_id": "session_123456"
+  }'
 
-1. **Clone the repository**
+# Memory query
+curl -X POST "http://localhost:8000/query" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "what was my last query?",
+    "session_id": "session_123456"
+  }'
+## 🎯 Memory System Features
 
+### Supported Memory Queries
+
+#### Bengali Memory Queries:
+- `আমার শেষ প্রশ্ন কী ছিল?` - "What was my last question?"
+- `আগের প্রশ্ন কী ছিল?` - "What was the previous question?"
+- `পূর্বের উত্তর কী ছিল?` - "What was the previous answer?"
+- `আমার আগের প্রশ্ন` - "My previous question"
+- `শেষ উত্তরটা কী ছিল?` - "What was the last answer?"
+
+#### English Memory Queries:
+- `what was my last query?`
+- `my previous question`
+- `what did I ask before?`
+- `tell me about my last question`
+- `what was your last answer?`
+
+### Session Management
+- **Automatic Session Creation**: New sessions created automatically
+- **Session Persistence**: All conversations saved to disk
+- **Session Cleanup**: Old inactive sessions automatically cleaned up
+- **Session Statistics**: Track message count, languages used, confidence scores
+- **Multi-session Support**: Handle multiple concurrent conversations
+
+## 🔧 Technical Architecture
+
+### Core Components
+
+1. **Query Processor** (`src/rag/query_processor.py`)
+   - Language detection (Bengali/English)
+   - Query type classification (MCQ, factual, general, memory)
+   - Query cleaning and normalization
+
+2. **Memory Manager** (`src/memory/memory_manager.py`)
+   - Session-based conversation tracking
+   - Persistent storage with JSON serialization
+   - Memory query detection and handling
+   - Context extraction from chat history
+
+3. **Response Generator** (`src/rag/generator.py`)
+   - Memory-aware response generation
+   - Context integration from previous conversations
+   - Multilingual prompt engineering
+   - Error handling and fallback responses
+
+4. **RAG Pipeline** (`src/rag/pipeline.py`)
+   - Orchestrates the complete workflow
+   - Integrates memory with document retrieval
+   - Session management integration
+
+### Content Processing Features
+
+- **Smart Chunking**: Content-aware chunking optimized for different document types
+  - MCQ: 800 chars (individual questions)
+  - Creative: 1500 chars (context + sub-questions) 
+  - Table: 1200 chars (structured data)
+  - General: 1000 chars (standard text)
+
+- **Rate-Limited API Usage**: Prevents quota exhaustion with smart delays
+- **Automatic Retry Logic**: Handles temporary API issues
+- **Content-Type Aware Retrieval**: Matches query types to appropriate content
+
+## 📊 API Endpoints
+
+### Core Endpoints
+- `POST /query` - Main query processing with memory support
+- `GET /health` - System health check
+- `GET /stats` - System statistics including memory stats
+
+### Session Management
+- `POST /session/create` - Create new conversation session
+- `GET /session/{session_id}/stats` - Get session statistics
+- `GET /session/{session_id}/history` - Get conversation history
+
+### Example API Requests
+
+```bash
+# Create session
+curl -X POST "http://localhost:8000/session/create"
+
+# Query with memory
+curl -X POST "http://localhost:8000/query" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "অনুপমের বাবা কী করতেন?",
+    "session_id": "your_session_id",
+    "k": 5
+  }'
+
+# Memory query
+curl -X POST "http://localhost:8000/query" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "আমার শেষ প্রশ্ন কী ছিল?",
+    "session_id": "your_session_id"
+  }'
+```
+
+   ## 🗂️ Project Structure
+
+```
+Multilingual_RAG_SYSTEM/
+├── 📁 src/                     # Source code
+│   ├── 📁 config/             # Configuration
+│   ├── 📁 document_processing/ # OCR and text extraction
+│   ├── 📁 knowledge_base/     # Embeddings and vector storage
+│   ├── 📁 memory/             # Memory management system
+│   ├── 📁 rag/                # RAG pipeline components
+│   └── 📁 utils/              # Utilities
+├── 📁 memory/                 # Persistent memory storage
+│   ├── chat_sessions.json    # Session data
+│   └── long_term_stats.json  # Analytics
+├── 📁 data/                   # Documents and database
+│   ├── HSC26-Bangla1st-Paper.pdf
+│   └── chroma_db/            # Vector database
+├── 📁 static/                 # Web interface
+│   └── index.html            # Chat interface
+├── 📄 app.py                  # FastAPI web server
+├── 📄 build_index.py          # Knowledge base builder
+├── 📄 test_memory.py          # Memory functionality tests
+├── 📄 test_rag.py             # RAG system tests
+├── 📄 test_sessions.py        # Session management tests
+├── 📄 start_api.py            # Server startup script
+└── 📄 requirements.txt        # Dependencies
+```
+
+## 🧪 Testing
+
+### Available Test Scripts
+
+1. **Memory Functionality Test**
    ```bash
-   git clone https://github.com/yourusername/Multilingual-RAG-System.git
-   cd Multilingual-RAG-System
+   python test_memory.py
    ```
+   Tests conversation memory, meta-queries, and session management.
 
-2. **Create virtual environment**
-
+2. **RAG System Test**
    ```bash
-   python -m venv .venv
+   python test_rag.py
+   ```
+   Tests basic query processing and document retrieval.
 
-   # On Linux/Mac
-   source .venv/bin/activate
+3. **Session Management Test**
+   ```bash
+   python test_sessions.py
+   ```
+   Tests session creation, persistence, and cleanup.
 
-   # On Windows
-   .venv\Scripts\activate
+### Test Coverage
+- ✅ Memory query detection and handling
+- ✅ Multilingual conversation tracking  
+- ✅ Session persistence and recovery
+- ✅ Document retrieval and ranking
+- ✅ Response generation quality
+- ✅ API endpoint functionality
+
+## 🔐 Configuration
+
+### Environment Variables (.env)
+```bash
+# Required
+GOOGLE_API_KEY=your_gemini_api_key_here
+
+# Optional Configuration
+GEMINI_MODEL=gemini-2.5-flash
+EMBEDDING_MODEL=gemini-embed-text-001
+CHUNK_SIZE=1000
+CHUNK_OVERLAP=200
+MAX_RETRIEVAL_DOCS=5
+```
+
+### Settings (src/config/settings.py)
+- **API Configuration**: Model names, API keys
+- **Memory Settings**: Session timeout, max messages per session
+- **Chunking Parameters**: Size limits per content type
+- **Logging Configuration**: Log levels and formats
+
+## 🚀 Deployment
+
+### Local Development
+```bash
+# Start development server
+python app.py
+
+# Access at http://localhost:8000
+```
+
+### Production Considerations
+- Use a proper WSGI server (e.g., Gunicorn, uWSGI)
+- Set up reverse proxy (Nginx, Apache)
+- Configure proper logging and monitoring
+- Set up database backups for memory persistence
+- Implement proper secret management
+
+## 📈 Performance & Scalability
+
+### Current Limitations
+- Single-threaded processing
+- In-memory session storage (with disk persistence)
+- API rate limiting (2 requests/second)
+
+### Optimization Opportunities
+- Implement async processing
+- Add Redis for session storage
+- Implement request queuing
+- Add caching layer for frequent queries
+- Database optimization for large-scale deployment
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgments
+
+- Google Gemini AI for providing the foundation models
+- ChromaDB for vector storage capabilities
+- FastAPI for the robust web framework
+- The open-source community for inspiration and tools
+
+---
+
+**Made with ❤️ for multilingual education and knowledge accessibility**
    ```
 
 3. **Install dependencies**

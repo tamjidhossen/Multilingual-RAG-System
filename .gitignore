@@ -1,8 +1,9 @@
+# Assessment and temporary files
 AI Engineer (Level-1) Assessment.txt
-PROJECT_GUIDELINES.md
+Abbreviations.md
+test_api_memory.py
 
 # PDF processing temporary files
-# *.pdf (commented to keep the source PDF)
 temp_images/
 ocr_output/
 gemini_cache/
