@@ -1,35 +1,35 @@
-# 🚀 Multilingual RAG System *Automatic expansion and intelligent handling of Bengali educational abbreviations*
+# Multilingual RAG System for*Automatic expansion and intelligent handling of Bengali educational abbreviations*
 
 </div>
 
-## 💫 Sample Interactionserature
+## Sample Interactionsture
 
 > A sophisticated **Multilingual Retrieval-Augmented Generation (RAG) System** that understands and responds to both Bengali and English queries with conversation memory.
 
-## ✨ What Makes This Special
+## What Makes This Special
 
-🎯 **Perfect Bengali Text Processing** - Advanced Gemini 2.5 Pro OCR achieves 95%+ accuracy on Bengali HSC textbook content  
-🧠 **Intelligent Content-Aware Chunking** - Different strategies for MCQs, essays, and tables  
-💬 **True Conversation Memory** - Remembers context and handles meta-queries like "What was my last question?"  
-🌐 **Seamless Multilingual Support** - Ask in Bengali, get answers in Bengali; ask in English about Bengali content  
-⚡ **Production-Ready API** - Complete REST API with interactive web interface  
+✓ **Perfect Bengali Text Processing** - Advanced Gemini 2.5 Pro OCR achieves 95%+ accuracy on Bengali HSC textbook content  
+✓ **Intelligent Content-Aware Chunking** - Different strategies for MCQs, essays, and tables  
+✓ **True Conversation Memory** - Remembers context and handles meta-queries like "What was my last question?"  
+✓ **Seamless Multilingual Support** - Ask in Bengali, get answers in Bengali; ask in English about Bengali content  
+✓ **Production-Ready API** - Complete REST API with interactive web interface  
 
-## 🎯 Live Demo
+## Live Demo
 
 ```bash
 python app.py
 # Visit: http://localhost:8000
 ```
 
-## 📸 System Screenshots
+## System Screenshots
 
 <div align="center">
 
-### 💬 Interactive Chat Interface
+### Interactive Chat Interface
 ![Chat Interface](assets/screenshots/chat_interface_showcase.png)
 *Real-time conversation with Bengali literature content, showcasing memory-aware responses and multilingual support*
 
-### 🎓 Advanced Abbreviation Processing  
+### Advanced Abbreviation Processing  
 ![Abbreviation Showcase](assets/screenshots/abbreviation_showcase.png)
 *Automatic expansion and intelligent handling of Bengali educational abbreviations*
 
@@ -90,7 +90,7 @@ A: ঢাকা বিশ্ববিদ্যালয় D ইউনিটে 
 **সঠিক উত্তর:** গ) সুন্দর চেহারার জন্য
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Setup
 ```bash
@@ -114,23 +114,23 @@ python build_index.py  # One-time setup (~10 minutes)
 python app.py  # Access at http://localhost:8000
 ```
 
-## 🏗️ Architecture Highlights
+## Architecture Highlights
 
 ```
-📊 Advanced OCR Processing (Gemini 2.5 Pro)
+Advanced OCR Processing (Gemini 2.5 Pro)
     ↓
-🧠 Smart Content-Type Chunking
+Smart Content-Type Chunking
     ↓  
-🎯 Semantic Vector Storage (ChromaDB)
+Semantic Vector Storage (ChromaDB)
     ↓
-🌐 Multilingual Query Processing
+Multilingual Query Processing
     ↓
-💬 Context-Aware Response Generation
+Context-Aware Response Generation
     ↓
-🧠 Conversation Memory Management
+Conversation Memory Management
 ```
 
-## 🔧 Technical Implementation
+## Technical Implementation
 
 ### Document Processing
 - **OCR Engine**: Gemini 2.5 Pro for superior Bengali text extraction
@@ -150,7 +150,7 @@ python app.py  # Access at http://localhost:8000
 - **Embeddings**: Gemini Embedding (gemini-embedding-001)
 - **Metadata**: Rich content type and source information
 
-## 🌐 API Reference
+## API Reference
 
 ### Query Endpoint
 ```http
@@ -184,14 +184,14 @@ Content-Type: application/json
 }
 ```
 
-## 📊 Performance Metrics
+## Performance Metrics
 
 - **Bengali Text Accuracy**: 95%+ (vs 60-70% traditional PDF extraction)
 - **Query Response Time**: <2 seconds average
 - **Memory Retention**: Full conversation history
 - **Multilingual Support**: Seamless Bengali ↔ English
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 | Component | Technology | Why This Choice |
 |-----------|------------|----------------|
@@ -201,7 +201,7 @@ Content-Type: application/json
 | **API** | FastAPI | High-performance async framework |
 | **Memory** | JSON + Session Management | Simple yet effective |
 
-## 📚 Assessment Questions Answered
+## Assessment Questions Answered
 
 ### Text Extraction Method
 **Used**: Gemini 2.5 Pro OCR instead of traditional PDF parsing  
@@ -227,14 +227,14 @@ Content-Type: application/json
 **Current Performance**: High accuracy on test cases (100% on provided samples)  
 **Potential Improvements**: Larger document corpus, fine-tuned embeddings for Bengali literature, query expansion techniques.
 
-## 🎯 Project Highlights
+## Project Highlights
 
-✅ **Advanced Bengali OCR** - 95%+ accuracy with Gemini 2.5 Pro  
-✅ **Smart Content Processing** - Automatic MCQ/essay/table separation  
-✅ **Conversation Memory** - True context-aware interactions  
-✅ **Production API** - Complete REST API with web interface  
-✅ **Multilingual Queries** - Seamless Bengali-English support  
-✅ **Custom RAG Pipeline** - No dependency on heavy frameworks  
+✓ **Advanced Bengali OCR** - 95%+ accuracy with Gemini 2.5 Pro  
+✓ **Smart Content Processing** - Automatic MCQ/essay/table separation  
+✓ **Conversation Memory** - True context-aware interactions  
+✓ **Production API** - Complete REST API with web interface  
+✓ **Multilingual Queries** - Seamless Bengali-English support  
+✓ **Custom RAG Pipeline** - No dependency on heavy frameworks  
 
 ---
 
